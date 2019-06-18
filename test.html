@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Test for JS</title>
+        <script src="GE.js"></script>
+        <script src="vector.js"></script>
+        <script src="matrix.js"></script>
+    </head>
+    <body>
+        <dl>
+            <dt>Test count:</dt>
+            <dd id=testCount></dd>
+        </dl>
+        <script>
+            document.getElementById("testCount").innerText = $GE.tests.length;
+
+            $GE.test();
+        </script>
+    </body>
+</html>

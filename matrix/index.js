@@ -28,9 +28,11 @@ class Matrixlike {
 
     scale(s) {
         // Scale each element by s.
-        return this.elements.map(elem => {
+        let elements = this.elements.map(elem => {
             return s * elem;
         });
+
+        return new Matrixlike(this.m, this.n, ...elements);
     }
 
     add(ml) {
@@ -39,10 +41,12 @@ class Matrixlike {
             throw new Error('Cannot add: operands do not have the same number of elements.');
         }
 
-        return this.elements.reduce((acc, curr, idx) => {
+        let elements = this.elements.reduce((acc, curr, idx) => {
             acc.push(curr + ml.elements[idx]);
             return acc;
         }, []);
+
+        return new Matrixlike(this.m, this.n, ...elements);
     }
 
     mult(ml){
@@ -74,7 +78,7 @@ class Matrixlike {
                 c.push(cij)
             }
         }
-        return c;
+        return new Matrixlike(m, p, ...c);
     }
 }
 
@@ -107,7 +111,10 @@ class Vector extends Matrixlike {
     constructor(dimension, ...components){
         // Storing the vector as if it was a <dim> by 1 matrix.
         super(dimension, 1, ...components);
-        this.components = components;
+    }
+
+    get components(){
+        return this.elements;
     }
 
     comp(c) {
@@ -121,6 +128,14 @@ class Vec2 extends Vector {
     constructor(x, y){
         super(2, x, y);
     }
+
+    get x(){
+        return this.comp(0);
+    }
+
+    get y() {
+        return this.comp(1);
+    }
 }
 
 class Vec3 extends Vector {
@@ -128,4 +143,23 @@ class Vec3 extends Vector {
     constructor(x, y, z){
         super(3, x, y, z);
     }
+
+    get x() {
+        return this.comp(0);
+    }
+
+    get y() {
+        return this.comp(1);
+    }
+
+    get z() {
+        return this.comp(2);
+    }
 }
+
+exports.Mat2 = Mat2;
+exports.Mat3 = Mat3;
+exports.Mat4 = Mat4;
+exports.Vec2 = Vec2;
+exports.Vec3 = Vec3;
+exports.Vector = Vector;

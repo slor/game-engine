@@ -6,22 +6,29 @@
     <body>
         <script src="./matrix.js"></script>
         <script>
-            let mat3 = new Mat3(2, 1, 2, 3, 4, 5, 6);
+            let matA = new Mat2(0, 1, 0, 0); // [1, 0, 0, 0]
+            let matB = new Mat2(0, 0, 1, 0); // [0, 0, 0, 1]
+            console.log(matA.mult(matB));
+            console.log(matB.mult(matA));
+
+            matA = new Mat3(1, 2, 3, 4, 5, 6);
+            matB = new Mat2(7, 8, 9, 10, 11, 12);
+            console.log(matA.mult(matB)); // [58, 64, 139, 154]
+
+
+            let mat3 = new Mat3(1, 2, 3, 4, 5, 6);
             console.log(mat3.elements);
             console.log(mat3.row(0));
             console.log(mat3.row(1));
             console.log(mat3.col(0));
             console.log(mat3.col(1));
             console.log(mat3.col(2));
+            console.log(mat3.ij(0, 2));
             console.log(mat3.scale(2));
-            console.log(mat3.add(new Mat3(2, 1,1,1,1,1,1)))
+            console.log(mat3.add(new Mat3(1,1,1,1,1,1)))
 
-            let mat4 = new Mat4(1, 1, 2, 3, 4);
+            let mat4 = new Mat4(1, 2, 3, 4);
             console.log(mat4.elements);
-            console.log(mat4.row(0));
-            console.log(mat4.col(1));
-            console.log(mat4.scale(2));
-            console.log(mat4.add(new Mat3(2, 1, 1, 1, 1)))
 
             let vec2 = new Vec2(1, 2);
             console.log(vec2.components);
@@ -29,22 +36,14 @@
             console.log(vec2.comp(1));
             console.log(vec2.scale(5));
             console.log(vec2.add(new Vec2(3, 4)));
-
-            let vec3 = new Vec3(1, 2, 3);
-            console.log(vec3.components);
-            console.log(vec3.comp(0));
-            console.log(vec3.comp(1));
-            console.log(vec3.comp(2));
-            console.log(vec3.scale(5));
-            try{
+            try {
                 console.log(vec3.add(new Vec2(3, 4)));
             } catch (err) {
                 console.log(err);
             }
 
-            console.log(vec3.add(new Vec3(3, 4, 5)));
-
-
+            let vec3 = new Vec3(1, 2, 3);
+            console.log(vec3.components);
         </script>
     </body>
 </html>

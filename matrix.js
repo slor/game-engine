@@ -22,6 +22,10 @@ class Matrixlike {
         }, []);
     }
 
+    ij(i, j){
+        return this.row(i)[j];
+    }
+
     scale(s) {
         // Scale each element by s.
         return this.elements.map(elem => {
@@ -40,18 +44,60 @@ class Matrixlike {
             return acc;
         }, []);
     }
+
+    mult(ml){
+        // Multiply with another Matrixlike.
+        //
+        // Given A is m × n and B is n × p,
+        // AB = C where C is m × p.
+        //
+        // A.mult(B) -> AB -> A(B) -> [... C elements ...] != B.mult(A)
+        //
+        // Cij = sum r=0 until n of Air*Brj,
+        // for 0 <= i < m and 0 <= j < p
+        let a = this;
+        let b = ml;
+        let m = a.m;
+        let n = a.n;
+        let p = b.n;
+        let c = [];
+
+        let i;
+        let j;
+        let r;
+        for(i = 0; i < m; i++){
+            for(j = 0; j < p; j++){
+                let cij = 0;
+                for(r = 0; r < n; r++){
+                    cij += a.ij(i, r) * b.ij(r, j);
+                }
+                c.push(cij)
+            }
+        }
+        return c;
+    }
+}
+
+class Mat2 extends Matrixlike {
+    // An m × 2 matrix
+    constructor(...elements) {
+        let m = elements.length / 2;
+        super(m, 2, ...elements);
+    }
 }
 
 class Mat3 extends Matrixlike {
-    // An m by 3 matrix
-    constructor(m, ...elements){
+    // An m × 3 matrix
+    constructor(...elements){
+        let m = elements.length / 3;
         super(m, 3, ...elements);
     }
 }
 
 class Mat4 extends Matrixlike {
-    // An m by 4 matrix
-    constructor(m, ...elements) {
+    // An m × 4 matrix
+    constructor(...elements) {
+        let m = elements.length / 4;
         super(m, 4, ...elements);
     }
 }
@@ -66,7 +112,7 @@ class Vector extends Matrixlike {
 
     comp(c) {
         // Get a zero-indexed component
-        return super.row(c)[0];
+        return super.ij(c, 0);
     }
 }
 

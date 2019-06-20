@@ -6,16 +6,6 @@
     <body>
         <script src="./matrix.js"></script>
         <script>
-            let matA = new Mat2(0, 1, 0, 0); // [1, 0, 0, 0]
-            let matB = new Mat2(0, 0, 1, 0); // [0, 0, 0, 1]
-            console.log(matA.mult(matB));
-            console.log(matB.mult(matA));
-
-            matA = new Mat3(1, 2, 3, 4, 5, 6);
-            matB = new Mat2(7, 8, 9, 10, 11, 12);
-            console.log(matA.mult(matB)); // [58, 64, 139, 154]
-
-
             let mat3 = new Mat3(1, 2, 3, 4, 5, 6);
             console.log(mat3.elements);
             console.log(mat3.row(0));
@@ -44,6 +34,21 @@
 
             let vec3 = new Vec3(1, 2, 3);
             console.log(vec3.components);
+
+            // Matrix multiplication
+            let matA = new Mat2(0, 1, 0, 0); // [1, 0, 0, 0]
+            let matB = new Mat2(0, 0, 1, 0); // [0, 0, 0, 1]
+            console.log(matA.mult(matB));
+            console.log(matB.mult(matA));
+
+            matA = new Mat3(1, 2, 3, 4, 5, 6);
+            matB = new Mat2(7, 8, 9, 10, 11, 12);
+            console.log(matA.mult(matB)); // [58, 64, 139, 154]
+
+            // Matrix-vector multiplication
+            let mA = new Mat3(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+            let vX = new Vec3(-2, 1, 0);
+            console.log(mA.mult(vX)); // [ 0, -3, -6, -9 ]
         </script>
     </body>
 </html>

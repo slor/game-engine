@@ -2,19 +2,49 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Test for JS</title>
-        <script src="GE.js"></script>
-        <script src="vector.js"></script>
-        <script src="matrix.js"></script>
-    </head>
+    </head >
     <body>
-        <dl>
-            <dt>Test count:</dt>
-            <dd id=testCount></dd>
-        </dl>
+        <script src="./matrix.js"></script>
         <script>
-            document.getElementById("testCount").innerText = $GE.tests.length;
+            let mat3 = new Mat3(2, 1, 2, 3, 4, 5, 6);
+            console.log(mat3.elements);
+            console.log(mat3.row(0));
+            console.log(mat3.row(1));
+            console.log(mat3.col(0));
+            console.log(mat3.col(1));
+            console.log(mat3.col(2));
+            console.log(mat3.scale(2));
+            console.log(mat3.add(new Mat3(2, 1,1,1,1,1,1)))
 
-            $GE.test();
+            let mat4 = new Mat4(1, 1, 2, 3, 4);
+            console.log(mat4.elements);
+            console.log(mat4.row(0));
+            console.log(mat4.col(1));
+            console.log(mat4.scale(2));
+            console.log(mat4.add(new Mat3(2, 1, 1, 1, 1)))
+
+            let vec2 = new Vec2(1, 2);
+            console.log(vec2.components);
+            console.log(vec2.comp(0));
+            console.log(vec2.comp(1));
+            console.log(vec2.scale(5));
+            console.log(vec2.add(new Vec2(3, 4)));
+
+            let vec3 = new Vec3(1, 2, 3);
+            console.log(vec3.components);
+            console.log(vec3.comp(0));
+            console.log(vec3.comp(1));
+            console.log(vec3.comp(2));
+            console.log(vec3.scale(5));
+            try{
+                console.log(vec3.add(new Vec2(3, 4)));
+            } catch (err) {
+                console.log(err);
+            }
+
+            console.log(vec3.add(new Vec3(3, 4, 5)));
+
+
         </script>
     </body>
 </html>

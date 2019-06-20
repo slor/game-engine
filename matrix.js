@@ -1,94 +1,85 @@
-;(() => {
-    class Matrix{
-        // Row-major
-        constructor(elements, rowMode=true){
-            // Assumes there are no holes
-            if (rowMode === true){
-                this._rows = elements;
-                this._N_ROWS = elements.length;
-
-                // Assumes >= 1 rows
-                this._N_COLS = this._rows[1].length;
-                this._columns = null;
-            } else {
-                this._columns = elements;
-                this._N_COLS = elements.length;
-
-                // Assumes >= 1 columns
-                this._N_ROWS = this._columns[1].length;
-                this._rows = null;
-            }
-        }
-
-        get dimensions(){
-            return [this._N_ROWS, this._N_COLS];
-        }
-
-        get rows(){
-            if (this._rows !== null) {
-                return this._rows;
-            }
-
-            let _rows = [];
-
-            let row;
-            for (row = 0; row < this._N_ROWS; row++){
-                let col;
-
-                _rows[row] = [];
-                for(col=0; col < this._N_COLS; col++){
-                    _rows[row].push(this._columns[col][row])
-                }
-            }
-
-            this._rows = _rows;
-            return this._rows;
-        }
-
-        get columns() {
-            if(this._columns !== null){
-                return this._columns;
-            }
-
-            let _cols = [];
-
-            let col;
-            for(col=0; col < this._N_COLS; col++){
-                let row;
-
-                _cols[col] = [];
-                for(row=0; row < this._N_ROWS; row++){
-                    _cols[col].push(this._rows[row][col])
-                }
-            }
-
-            this._columns = _cols;
-            return this._columns;
-        }
+class Matrixlike {
+    // Row-major
+    constructor(m, n, ...elements){
+        this.elements = elements;
+        this.m = m;
+        this.n = n;
     }
 
-
-    function test () {
-        let mat = new Matrix([
-            [1, 2, 3],
-            [4, 5, 6]
-        ]);
-        $GE.assert(2 === mat.dimensions[0])
-        $GE.assert(3 === mat.dimensions[1])
-        console.log(mat.rows);
-        console.log(mat.columns);
-
-        let mat2 = new Matrix([
-            [1, 4],
-            [2, 5],
-            [3, 6]
-        ], false);
-        $GE.assert(2 === mat2.dimensions[0])
-        $GE.assert(3 === mat2.dimensions[1])
-        console.log(mat2.rows);
-        console.log(mat2.columns);
+    row(r) {
+        // Get a single zero-indexed row.
+        return this.elements.slice(r * this.n, r * this.n + this.n);
     }
 
-    $GE.Matrix = Matrix;
-    $GE.tests.push(test);
-})();
+    col(c) {
+        // Get a single zero-indexed column.
+        return this.elements.reduce((acc, curr, idx) => {
+            if (idx % this.n === c) {
+                acc.push(curr);
+            }
+
+            return acc;
+        }, []);
+    }
+
+    scale(s) {
+        // Scale each element by s.
+        return this.elements.map(elem => {
+            return s * elem;
+        });
+    }
+
+    add(ml) {
+        // Add to another Matrixlike.
+        if(ml.elements.length !== this.elements.length){
+            throw new Error('Cannot add: operands do not have the same number of elements.');
+        }
+
+        return this.elements.reduce((acc, curr, idx) => {
+            acc.push(curr + ml.elements[idx]);
+            return acc;
+        }, []);
+    }
+}
+
+class Mat3 extends Matrixlike {
+    // An m by 3 matrix
+    constructor(m, ...elements){
+        super(m, 3, ...elements);
+    }
+}
+
+class Mat4 extends Matrixlike {
+    // An m by 4 matrix
+    constructor(m, ...elements) {
+        super(m, 4, ...elements);
+    }
+}
+
+class Vector extends Matrixlike {
+    // A vector
+    constructor(dimension, ...components){
+        // Storing the vector as if it was a <dim> by 1 matrix.
+        super(dimension, 1, ...components);
+        this.components = components;
+    }
+
+    comp(c) {
+        // Get a zero-indexed component
+        return super.row(c)[0];
+    }
+}
+
+class Vec2 extends Vector {
+    // A 2-dimensional vector
+    constructor(x, y){
+        super(2, x, y);
+    }
+}
+
+class Vec3 extends Vector {
+    // A 3-dimensional vector
+    constructor(x, y, z){
+        super(3, x, y, z);
+    }
+}

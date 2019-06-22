@@ -1,0 +1,23 @@
+{
+  "name": "game-engine",
+  "version": "1.0.0",
+  "description": "Just a box",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "tape": "^4.10.2"
+  },
+  "scripts": {
+    "test": "tape matrix/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slor/game-engine.git"
+  },
+  "author": "Elliott Hoffman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slor/game-engine/issues"
+  },
+  "homepage": "https://github.com/slor/game-engine#readme"
+}

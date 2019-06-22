@@ -1,4 +1,4 @@
-const m = require("./matrix.js");
+const m = require("./index.js");
 
 var test = require('tape')
 

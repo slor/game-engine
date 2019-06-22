@@ -1,7 +1,16 @@
 # game-engine
 
-## Testing setup
+## Setup
+
+Tested on macOS 10.14.
 
 ```
-npm install tape --save-dev
+brew install node
 ```
+
+## Testing
+
+```
+npm test
+```
+

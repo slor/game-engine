@@ -10,7 +10,17 @@ brew install node
 
 ## Testing
 
+### Unit tests
+
 ```
 npm test
 ```
+
+## Running
+
+```
+python -m SimpleHTTPServer
+```
+
+Then go to http://localhost:8000/ 
 

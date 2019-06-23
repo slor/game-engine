@@ -19,9 +19,7 @@ Game = {
 
 Game.document.addEventListener('keydown', e => {
     e = e || window.event;
-    // Game.keysPressed[Game.KEY_MAP[e.keyCode]] = true;
     Game.keysPressed[e.key] = true;
-    // console.debug(e);
     e.preventDefault();
 });
 

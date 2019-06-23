@@ -16,12 +16,13 @@ brew install node
 npm test
 ```
 
-## Running
+## Running in debug
 
 ```
-browserify ./src/main.js -o ./build/bundle.js --standalone ge
-
 python -m SimpleHTTPServer
+
+# then, in another terminal:
+watchify ./src/main.js -o ./build/bundle.js --standalone ge --live --debug
 ```
 
 Then go to http://localhost:8000/demos/engine/ 

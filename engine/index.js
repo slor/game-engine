@@ -18,6 +18,7 @@ class Game {
         this.document = this.window.document;
         this.canvas = this.document.getElementById("screen");
         this.context = this.canvas.getContext('2d');
+        this.sprites = [];
     }
 
     keyDown(e){
@@ -61,7 +62,38 @@ class Game {
     }
 
     update(){
-        // TODO
+        const speed = 10;
+
+        // WASD sprite move
+        if(this.keysPressed['d'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.x += speed;
+            });
+        }
+        if(this.keysPressed['a'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.x -= speed;
+            });
+        }
+        if(this.keysPressed['s'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.y += speed;
+            });
+        }
+        if(this.keysPressed['w'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.y -= speed;
+            });
+        }
+
+        // Mouse move
+        if(this.mousePressed === true){
+            this.sprites.forEach(sprite => {
+                sprite.x = this.mousePosX;
+                sprite.y = this.mousePosY;
+            });
+        }
+
     }
 
     clear(){
@@ -98,6 +130,10 @@ class Game {
         if(this.DEBUG){
             this.drawDebugInfo();
         }
+
+        this.sprites.forEach((sprite) => {
+            sprite.draw(this.context);
+        });
     }
 }
 

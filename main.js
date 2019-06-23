@@ -1,8 +1,12 @@
-const g = require('./engine');
+const engine = require('./engine');
+const sprite = require('./sprite');
 
-game = new g.Game(window);
+game = new engine.Game(window);
+loader = new sprite.Loader('http://localhost:8000/resources/richtor.bmp', function (){
+    const ctx = document.getElementById('screen').getContext('2d');
+    game.sprites.push(new sprite.Sprite(loader.sheet, ctx, 0, 0, 28, 57));
+}); 
 
-            
 function loop(now){
     window.requestAnimationFrame(loop);
 

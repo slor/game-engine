@@ -19,6 +19,7 @@ class Game {
         this.document = this.window.document;
         this.canvas = this.document.getElementById("screen");
         this.context = this.canvas.getContext('2d');
+        this.sprites = [];
     }
 
     keyDown(e){
@@ -62,7 +63,38 @@ class Game {
     }
 
     update(){
-        // TODO
+        const speed = 10;
+
+        // WASD sprite move
+        if(this.keysPressed['d'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.x += speed;
+            });
+        }
+        if(this.keysPressed['a'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.x -= speed;
+            });
+        }
+        if(this.keysPressed['s'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.y += speed;
+            });
+        }
+        if(this.keysPressed['w'] === true){
+            this.sprites.forEach((sprite) => {
+                sprite.y -= speed;
+            });
+        }
+
+        // Mouse move
+        if(this.mousePressed === true){
+            this.sprites.forEach(sprite => {
+                sprite.x = this.mousePosX;
+                sprite.y = this.mousePosY;
+            });
+        }
+
     }
 
     clear(){
@@ -99,6 +131,10 @@ class Game {
         if(this.DEBUG){
             this.drawDebugInfo();
         }
+
+        this.sprites.forEach((sprite) => {
+            sprite.draw(this.context);
+        });
     }
 }
 
@@ -106,11 +142,15 @@ module.exports = {
     "Game": Game
 }
 },{}],2:[function(require,module,exports){
-const g = require('./engine');
+const engine = require('./engine');
+const sprite = require('./sprite');
 
-game = new g.Game(window);
+game = new engine.Game(window);
+loader = new sprite.Loader('http://localhost:8000/resources/richtor.bmp', function (){
+    const ctx = document.getElementById('screen').getContext('2d');
+    game.sprites.push(new sprite.Sprite(loader.sheet, ctx, 0, 0, 28, 57));
+}); 
 
-            
 function loop(now){
     window.requestAnimationFrame(loop);
 
@@ -144,4 +184,38 @@ window.addEventListener('mouseup', function(e) {
 });
 
 window.requestAnimationFrame(loop);
-},{"./engine":1}]},{},[2]);
+},{"./engine":1,"./sprite":3}],3:[function(require,module,exports){
+class Loader {
+	// Load a sprite sheet once.
+	constructor(src, loadedCallback){
+		this.sheet = new Image();
+		this.sheet.addEventListener('load', loadedCallback, false);
+		this.sheet.src = src;
+	}
+}
+
+
+class Sprite {
+	// slice a sprite from a sheet
+	constructor(sheet, ctx, sx, sy, sw, sh){
+		this.sheet = sheet;
+		this.sx = sx;
+		this.sy = sy;
+		this.sw = sw;
+		this.sh = sh;
+		this.x = 0;
+		this.y = 0;
+		this.ctx = ctx;
+	}
+
+	draw(){
+		this.ctx.drawImage(this.sheet, this.sx, this.sy, this.sw, this.sh, 
+					  this.x, this.y, this.sw, this.sh);
+	}
+}
+
+module.exports = {
+	"Loader": Loader,
+	"Sprite": Sprite
+};
+},{}]},{},[2]);

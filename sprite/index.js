@@ -26,3 +26,8 @@ class Sprite {
 					  this.x, this.y, this.sw, this.sh);
 	}
 }
+
+module.exports = {
+	"Loader": Loader,
+	"Sprite": Sprite
+};

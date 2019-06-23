@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Web Canvas</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="../../build/bundle.js" type="text/javascript"></script>
+    </head>
+
+    <body>
+        <div id="canvasContainer">
+            <canvas id="screen" width="640" height="480">You do not support Canvas.</canvas>
+        </div>
+        <link rel="stylesheet" href="../style.css">
+        <script type="text/javascript">
+            game = new ge.Game(window);
+
+            loader = new ge.Loader('http://localhost:8000/resources/richtor.bmp', function (){
+                const ctx = document.getElementById('screen').getContext('2d');
+                game.sprites.push(new ge.Sprite(loader.sheet, ctx, 0, 0, 28, 57));
+            }); 
+
+            function loop(now){
+                window.requestAnimationFrame(loop);
+
+                game.frame(now);
+            }
+
+            window.addEventListener('keydown', function(e) {
+                e = e || window.event;
+                game.keyDown(e);
+                e.preventDefault();
+            });
+            window.addEventListener('keyup', function(e) {
+                e = e || window.event;
+                game.keyUp(e);
+                e.preventDefault();
+            });
+            window.addEventListener('mousemove', function(e) {
+                e = e || window.event;
+                game.mouseMove(e);
+                e.preventDefault();
+            });
+            window.addEventListener('mousedown', function(e) {
+                e = e || window.event;
+                game.mouseDown(e);
+                e.preventDefault();
+            });
+            window.addEventListener('mouseup', function(e) {
+                e = e || window.event;
+                game.mouseUp(e);
+                e.preventDefault();
+            });
+
+            window.requestAnimationFrame(loop);
+        </script>
+    </body>
+</html>

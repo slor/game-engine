@@ -19,8 +19,10 @@ npm test
 ## Running
 
 ```
+browserify ./src/main.js -o ./build/bundle.js --standalone ge
+
 python -m SimpleHTTPServer
 ```
 
-Then go to http://localhost:8000/ 
+Then go to http://localhost:8000/demos/engine/ 
 

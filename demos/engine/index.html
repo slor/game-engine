@@ -18,9 +18,7 @@
                 const idle2 = new ge.Sprite(loader.sheet, game.context, 49, 11, 21, 44);
                 const idle3 = new ge.Sprite(loader.sheet, game.context, 85, 11, 21, 44);
 
-                game.entities.push(new ge.Entity(0, 0, idle1));
-                game.entities.push(new ge.Entity(22, 0, idle2));
-                game.entities.push(new ge.Entity(44, 0, idle3));
+                game.entities.push(new ge.Entity(20, 20, [idle1, idle2, idle3]));
             }); 
 
             function loop(now){

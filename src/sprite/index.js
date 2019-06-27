@@ -19,9 +19,8 @@ class Sprite {
 		this.ctx = ctx;
 	}
 
-	draw(x, y){
-		this.ctx.drawImage(this.sheet, this.sx, this.sy, this.sw, this.sh, 
-					  x, y, this.sw, this.sh);
+	draw(x, y, scale=1){
+		this.ctx.drawImage(this.sheet, this.sx, this.sy, this.sw, this.sh, x, y, scale * this.sw, scale * this.sh, );
 	}
 }
 

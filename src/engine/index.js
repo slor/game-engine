@@ -3,6 +3,7 @@ class Game {
         this.SECOND = 1000.0;
         this.TICK = 1000.0 / 60.0; // In ms
         this.DEBUG = true;
+        this.SMOOTH = false;
 
         this.keysPressed = {};
         this.mousePosX = 0;
@@ -19,6 +20,8 @@ class Game {
         this.canvas = this.document.getElementById("screen");
         this.context = this.canvas.getContext('2d');
         this.entities = [];
+
+        this.context.imageSmoothingEnabled = this.SMOOTH;
     }
 
     keyDown(e){
@@ -62,38 +65,41 @@ class Game {
     }
 
     update(){
-        const speed = 10;
+        // const speed = 10;
 
-        // WASD entity move
-        if(this.keysPressed['d'] === true){
-            this.entities.forEach((entity) => {
-                entity.x += speed;
-            });
-        }
-        if(this.keysPressed['a'] === true){
-            this.entities.forEach((entity) => {
-                entity.x -= speed;
-            });
-        }
-        if(this.keysPressed['s'] === true){
-            this.entities.forEach((entity) => {
-                entity.y += speed;
-            });
-        }
-        if(this.keysPressed['w'] === true){
-            this.entities.forEach((entity) => {
-                entity.y -= speed;
-            });
-        }
+        // // WASD entity move
+        // if(this.keysPressed['d'] === true){
+        //     this.entities.forEach((entity) => {
+        //         entity.x += speed;
+        //     });
+        // }
+        // if(this.keysPressed['a'] === true){
+        //     this.entities.forEach((entity) => {
+        //         entity.x -= speed;
+        //     });
+        // }
+        // if(this.keysPressed['s'] === true){
+        //     this.entities.forEach((entity) => {
+        //         entity.y += speed;
+        //     });
+        // }
+        // if(this.keysPressed['w'] === true){
+        //     this.entities.forEach((entity) => {
+        //         entity.y -= speed;
+        //     });
+        // }
 
-        // Mouse move
-        if(this.mousePressed === true){
-            this.entities.forEach(entity => {
-                entity.x = this.mousePosX;
-                entity.y = this.mousePosY;
-            });
-        }
+        // // Mouse move
+        // if(this.mousePressed === true){
+        //     this.entities.forEach(entity => {
+        //         entity.x = this.mousePosX;
+        //         entity.y = this.mousePosY;
+        //     });
+        // }
 
+        this.entities.forEach(entity => {
+            entity.update(this.lastTick);
+        });
     }
 
     clear(){
@@ -111,17 +117,21 @@ class Game {
         ctx.textAlign = 'right';
 
         ctx.fillText(`${this.lastTick}`.split('.')[0], can.width, DEBUG_SIZE);
-        ctx.fillText(`${this.lastSec}`.split('.')[0], can.width, DEBUG_SIZE * 2);
-        ctx.fillText(`${this.lastFps}`.slice(0, 5), can.width, DEBUG_SIZE * 3);
+        ctx.fillText(`${this.framesLastSec}`, can.width, DEBUG_SIZE * 2);
+        ctx.fillText(`${this.lastSec}`.split('.')[0], can.width, DEBUG_SIZE * 3);
+        ctx.fillText(`${this.lastFps}`.slice(0, 5), can.width, DEBUG_SIZE * 4);
+
 
         // Mouse
-        ctx.fillText(`${this.mousePosX}, ${this.mousePosY}`, can.width, DEBUG_SIZE * 4);
+        ctx.fillText(`${this.mousePosX}, ${this.mousePosY}`, can.width, DEBUG_SIZE * 5);
         if (this.mousePressed) {
-            ctx.fillText('Click!', can.width, DEBUG_SIZE * 5);
+            ctx.fillText('Click!', can.width, DEBUG_SIZE * 6);
         }
 
         // Keyboard
-        ctx.fillText(`${Object.keys(this.keysPressed)}`, can.width, DEBUG_SIZE * 6);
+        ctx.fillText(`${Object.keys(this.keysPressed)}`, can.width, DEBUG_SIZE * 7);
+
+
     }
 
     draw() {

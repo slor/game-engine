@@ -6,15 +6,10 @@ Tested on macOS 10.14.
 
 ```
 brew install node
+npm install
+npm install -g watchify
 ```
 
-## Testing
-
-### Unit tests
-
-```
-npm test
-```
 
 ## Running in debug
 

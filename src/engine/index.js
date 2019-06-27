@@ -18,7 +18,7 @@ class Game {
         this.document = this.window.document;
         this.canvas = this.document.getElementById("screen");
         this.context = this.canvas.getContext('2d');
-        this.sprites = [];
+        this.entities = [];
     }
 
     keyDown(e){
@@ -64,33 +64,33 @@ class Game {
     update(){
         const speed = 10;
 
-        // WASD sprite move
+        // WASD entity move
         if(this.keysPressed['d'] === true){
-            this.sprites.forEach((sprite) => {
-                sprite.x += speed;
+            this.entities.forEach((entity) => {
+                entity.x += speed;
             });
         }
         if(this.keysPressed['a'] === true){
-            this.sprites.forEach((sprite) => {
-                sprite.x -= speed;
+            this.entities.forEach((entity) => {
+                entity.x -= speed;
             });
         }
         if(this.keysPressed['s'] === true){
-            this.sprites.forEach((sprite) => {
-                sprite.y += speed;
+            this.entities.forEach((entity) => {
+                entity.y += speed;
             });
         }
         if(this.keysPressed['w'] === true){
-            this.sprites.forEach((sprite) => {
-                sprite.y -= speed;
+            this.entities.forEach((entity) => {
+                entity.y -= speed;
             });
         }
 
         // Mouse move
         if(this.mousePressed === true){
-            this.sprites.forEach(sprite => {
-                sprite.x = this.mousePosX;
-                sprite.y = this.mousePosY;
+            this.entities.forEach(entity => {
+                entity.x = this.mousePosX;
+                entity.y = this.mousePosY;
             });
         }
 
@@ -131,8 +131,8 @@ class Game {
             this.drawDebugInfo();
         }
 
-        this.sprites.forEach((sprite) => {
-            sprite.draw(this.context);
+        this.entities.forEach((entity) => {
+            entity.draw(this.context);
         });
     }
 }

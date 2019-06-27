@@ -16,17 +16,14 @@ class Sprite {
 		this.sy = sy;
 		this.sw = sw;
 		this.sh = sh;
-		this.x = 0;
-		this.y = 0;
 		this.ctx = ctx;
 	}
 
-	draw(){
+	draw(x, y){
 		this.ctx.drawImage(this.sheet, this.sx, this.sy, this.sw, this.sh, 
-					  this.x, this.y, this.sw, this.sh);
+					  x, y, this.sw, this.sh);
 	}
 }
-
 
 
 module.exports = {

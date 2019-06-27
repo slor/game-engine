@@ -68,16 +68,7 @@ class Game {
         // const speed = 10;
 
         // // WASD entity move
-        // if(this.keysPressed['d'] === true){
-        //     this.entities.forEach((entity) => {
-        //         entity.x += speed;
-        //     });
-        // }
-        // if(this.keysPressed['a'] === true){
-        //     this.entities.forEach((entity) => {
-        //         entity.x -= speed;
-        //     });
-        // }
+
         // if(this.keysPressed['s'] === true){
         //     this.entities.forEach((entity) => {
         //         entity.y += speed;
@@ -98,7 +89,7 @@ class Game {
         // }
 
         this.entities.forEach(entity => {
-            entity.update(this.lastTick);
+            entity.update(this.lastTick, this.keysPressed);
         });
     }
 

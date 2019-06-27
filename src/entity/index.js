@@ -1,21 +1,46 @@
 class Entity{
-	constructor(x, y, sprites){
+	constructor(x, y){
 		this.x = x;
 		this.y = y;
-		this.sprites = sprites;
 
-		this.nextSpriteTime = null;
-		this.nextSprite = null;
-		this.speed = 1000 / 60 * 1;
-		this.loop = 0;
+		this.state = null;
+		this.animations = {};
+		this.time = null;
 	}
 
-	update(time){
+	registerAnimation(state, sprites, frameSpeed){
+		this.animations[state] = new Animation(sprites, frameSpeed);
+	}
+
+	update(time, keys){
+		this.time = time;
+
+		if(keys['ArrowDown'] === true){
+            this.state = 'DUCK';
+        } else {
+        	this.state = 'IDLE';
+        }
+        
+	}
+
+	draw(){
+		this.animations[this.state].sprite(this.time).draw(this.x, this.y, 10);
+	}
+}
+
+class Animation{
+	constructor(sprites, frameSpeed, loop=0){
+		this.sprites = sprites;
+		this.frameSpeed = frameSpeed;
+		this.nextSpriteTime = null;
+		this.nextSprite = null;
+		this.loop = loop;
+	}
+
+	sprite(time){
 		if(this.nextSprite === null){
 			this.nextSprite = 0;
-			this.nextSpriteTime = time + this.speed;
-			this.loop = 1;
-			return
+			this.nextSpriteTime = time + this.frameSpeed;
 		}
 
 		if(time > this.nextSpriteTime){
@@ -27,15 +52,13 @@ class Entity{
 			}
 
 			this.nextSprite = this.nextSprite + this.loop;
-			this.nextSpriteTime = this.nextSpriteTime + this.speed;
+			this.nextSpriteTime = this.nextSpriteTime + this.frameSpeed;
 		}
-	}
 
-	draw(){
-		// Pick what to draw and draw here
-		this.sprites[this.nextSprite].draw(this.x, this.y, 10);
+		return this.sprites[this.nextSprite];
 	}
 }
+
 
 module.exports = {
 	"Entity": Entity

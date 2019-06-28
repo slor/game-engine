@@ -7,6 +7,7 @@ module.exports = {
 	"Game": engine.Game,
 	"Loader": sprite.Loader,
 	"Sprite": sprite.Sprite,
-	"Entity": entity.Entity
+	"Entity": entity.Entity,
+	"Animation": entity.Animation,
 }
 

@@ -7,18 +7,10 @@ class Entity{
 		this.y = y;
 
 		this.state;
-		this.defaultState;
 		this.stateHandlers = {};
-		this.animations = {};
 		this.animation;
+		this.nextAnimation = [];
 		this.time;
-	}
-
-	// Register an animation to play when the entity is in a certain state.
-	registerAnimation(state, sprites, frameSpeed, loop=false){
-		this.animations[state] = new Animation(sprites, frameSpeed, loop);
-
-		return this;
 	}
 
 	// Register a handler to call when the entity is in a certain
@@ -27,10 +19,14 @@ class Entity{
 		this.stateHandlers[state] = handler;
 
 		if(defaultState === true){
-			this.defaultState = state;
+			this.state = state;
 		}
 
 		return this;
+	}
+
+	get stateHandler(){
+		return this.stateHandlers[this.state];
 	}
 
 	// Handle the current state based on the entity and the game world.
@@ -39,15 +35,12 @@ class Entity{
 		// If this is the first update, then we must rewind the animation
 		// later
 		this.time = world.time;
-		this.state = this.state || this.defaultState;
+		this.stateHandler(this, world);
 
-		let stateChanged = this.stateHandlers[this.state](this, world);
-
-		this.animation = this.animations[this.state];
 		this.animation.x = this.x;
 		this.animation.y = this.y;
-		if(stateChanged){
-			this.animation.rewind(this.time);
+		if(this.nextAnimation[this.nextAnimation.length - 1]){
+			this.animation = this.nextAnimation.pop().rewind();
 		}
 		this.animation.advance(this.time);
 	}
@@ -83,8 +76,11 @@ class Animation{
 	}
 
 	// Reset to the first sprite in the animation.
-	rewind(time){
+	rewind(){
 		this.index = 0;
+		this.nextSpriteTime = null;
+
+		return this;
 	}
 
 	// Advance to the next sprite in the animation if enough time
@@ -113,5 +109,6 @@ class Animation{
 
 
 module.exports = {
-	"Entity": Entity
+	"Entity": Entity,
+	"Animation": Animation
 }

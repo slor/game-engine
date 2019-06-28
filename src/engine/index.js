@@ -51,8 +51,13 @@ class Game {
     }
 
     update(){
+        const world = {
+            'time': this.lastTick,
+            'keysPressed': this.keysPressed
+        }
+        
         this.entities.forEach(entity => {
-            entity.update(this.lastTick, this.keysPressed);
+            entity.update(world);
         });
     }
 

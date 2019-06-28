@@ -11,22 +11,24 @@ class Entity{
 
 	registerAnimation(state, sprites, frameSpeed, loop=false){
 		this.animations[state] = new Animation(sprites, frameSpeed, loop);
+
+		return this;
 	}
 
-	update(time, keys){
-		this.time = time;
+	update(world){
+		this.time = world.time;
 
 		let stateChange = false;
 
 		switch(this.state){
 			case 'IDLE':
-				if(keys['ArrowDown'] === true){
+				if(world.keysPressed['ArrowDown'] === true){
 					this.state = 'DUCK';
 					stateChange = true;
 				}
 				break;
 			case 'DUCK':
-				if(keys['ArrowDown'] !== true){
+				if(world.keysPressed['ArrowDown'] !== true){
 					this.state = 'IDLE';
 					stateChange = true;
 				}
@@ -40,9 +42,9 @@ class Entity{
 		this.animation.x = this.x;
 		this.animation.y = this.y;
 		if(stateChange === true){
-			this.animation.rewind(time);
+			this.animation.rewind(this.time);
 		} else {
-			this.animation.advance(time);
+			this.animation.advance(this.time);
 		}
 	}
 

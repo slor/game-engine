@@ -14,16 +14,17 @@
             game = new ge.Game(window);
 
             loader = new ge.Loader('http://localhost:8000/resources/10340.png', function (){
-                const idle1 = new ge.Sprite(loader.sheet, game.context, 15, 11, 21, 44);
-                const idle2 = new ge.Sprite(loader.sheet, game.context, 49, 11, 21, 44);
-                const idle3 = new ge.Sprite(loader.sheet, game.context, 85, 11, 21, 44);
+                const idle = new ge.Animation(loader.sheet, game.context, 
+                    [[15, 11, 21, 44],
+                     [49, 11, 21, 44],
+                     [85, 11, 21, 44]], 10, true
+                );
 
-                const duck1 = new ge.Sprite(loader.sheet, game.context, 149, 11, 21, 44);
-                const duck2 = new ge.Sprite(loader.sheet, game.context, 180, 11, 21, 44);
-                const duck3 = new ge.Sprite(loader.sheet, game.context, 213, 11, 21, 44);
-
-                const idle = new ge.Animation([idle1, idle2, idle3, idle2], 1000 / 100, true);
-                const duck = new ge.Animation([duck1, duck2, duck3], 1000 / 200);
+                const duck = new ge.Animation(loader.sheet, game.context,
+                    [[149, 11, 21, 44],
+                     [180, 11, 21, 44],
+                     [213, 11, 21, 44]], 5
+                );
 
                 let richter = new ge.Entity(20, 20)
                 .registerState('IDLE', function(entity, world){

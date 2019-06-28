@@ -1,3 +1,5 @@
+const sprite = require('../sprite');
+
 // A "thing" in the game world. 
 //
 // Can update its own state and draw itself.
@@ -52,18 +54,22 @@ class Entity{
 
 // A series of sprites played in sequence, optionally as a loop.
 class Animation{
-	constructor(sprites, frameSpeed, loop){
-		this.sprites = sprites;
-		this.index = 0;
-		this.nextSpriteTime;
-		this.loop = loop;
-
-		// I think this is wrong...
-		this.frameSpeed = frameSpeed;
-
+	constructor(spriteSheet, context, slices, frameSpeed, loop=false){
 		this.time;
 		this.x;
 		this.y;
+
+		this.sprites = [];
+		slices.map(slice => {
+			this.sprites.push(new sprite.Sprite(spriteSheet, context, ...slice));
+		});
+		
+		this.loop = loop;
+		this.index = 0;
+		this.nextSpriteTime;
+		
+		// I think this is wrong...
+		this.frameSpeed = frameSpeed;
 	}
 
 	get sprite(){

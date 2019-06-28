@@ -3,59 +3,96 @@ class Entity{
 		this.x = x;
 		this.y = y;
 
-		this.state = null;
+		this.state;
 		this.animations = {};
-		this.time = null;
+		this.animation;
+		this.time;
 	}
 
-	registerAnimation(state, sprites, frameSpeed){
-		this.animations[state] = new Animation(sprites, frameSpeed);
+	registerAnimation(state, sprites, frameSpeed, loop=false){
+		this.animations[state] = new Animation(sprites, frameSpeed, loop);
 	}
 
 	update(time, keys){
 		this.time = time;
 
-		if(keys['ArrowDown'] === true){
-            this.state = 'DUCK';
-        } else {
-        	this.state = 'IDLE';
-        }
-        
+		let stateChange = false;
+
+		switch(this.state){
+			case 'IDLE':
+				if(keys['ArrowDown'] === true){
+					this.state = 'DUCK';
+					stateChange = true;
+				}
+				break;
+			case 'DUCK':
+				if(keys['ArrowDown'] !== true){
+					this.state = 'IDLE';
+					stateChange = true;
+				}
+				break;
+			default:
+				this.state = 'IDLE';
+				stateChange = true;
+		}
+
+		this.animation = this.animations[this.state];
+		this.animation.x = this.x;
+		this.animation.y = this.y;
+		if(stateChange === true){
+			this.animation.rewind(time);
+		} else {
+			this.animation.advance(time);
+		}
 	}
 
 	draw(){
-		this.animations[this.state].sprite(this.time).draw(this.x, this.y, 10);
+		this.animation.draw();
 	}
 }
 
 class Animation{
-	constructor(sprites, frameSpeed){
+	constructor(sprites, frameSpeed, loop){
 		this.sprites = sprites;
+		this.index = 0;
+		this.nextSpriteTime;
+		this.loop = loop;
+
 		this.frameSpeed = frameSpeed;
-		this.nextSpriteTime = null;
-		this.nextSprite = null;
-		this.loop = 1;
+		this.time;
+		this.x;
+		this.y;
 	}
 
-	sprite(time){
-		if(this.nextSprite === null){
-			this.nextSprite = 0;
-			this.nextSpriteTime = time + this.frameSpeed;
-		}
+	get sprite(){
+		return this.sprites[this.index];
+	}
 
-		if(time > this.nextSpriteTime){
-			// bounce back and forth through the sprites
-			if(this.nextSprite + this.loop === this.sprites.length){
-				this.loop = this.loop * -1;
-			} else if (this.nextSprite + this.loop < 0){
-				this.loop = this.loop * -1;
+	draw(){
+		let sprite = this.sprite;
+		sprite.draw(this.x, this.y, 10);
+	}
+
+	rewind(time){
+		this.time = time;
+		this.index = 0;
+		this.nextSpriteTime = this.time + this.frameSpeed;
+	}
+
+	advance(time){
+		this.time = time;
+
+		if(this.time > this.nextSpriteTime){
+			this.index++;
+
+			if(this.loop === true){
+				this.index = this.index % this.sprites.length;
+			} else if(this.index === this.sprites.length) {
+				this.index--;
 			}
 
-			this.nextSprite = this.nextSprite + this.loop;
 			this.nextSpriteTime = this.nextSpriteTime + this.frameSpeed;
 		}
-
-		return this.sprites[this.nextSprite];
 	}
 }
 

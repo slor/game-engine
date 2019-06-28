@@ -29,12 +29,12 @@ class Entity{
 }
 
 class Animation{
-	constructor(sprites, frameSpeed, loop=0){
+	constructor(sprites, frameSpeed){
 		this.sprites = sprites;
 		this.frameSpeed = frameSpeed;
 		this.nextSpriteTime = null;
 		this.nextSprite = null;
-		this.loop = loop;
+		this.loop = 1;
 	}
 
 	sprite(time){

@@ -31,20 +31,6 @@ class Game {
     keyUp(e){
         delete this.keysPressed[e.key];
     }    
-
-    mouseMove(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        this.mousePosX = e.clientX - rect.left;
-        this.mousePosY = e.clientY - rect.top;
-    }
-
-    mouseDown(e) {
-        this.mousePressed = true;
-    }
-
-    mouseUp(e) {
-        this.mousePressed = false;
-    }
     
     frame(now){
         const timeSinceLastTick = now - this.lastTick;
@@ -65,29 +51,6 @@ class Game {
     }
 
     update(){
-        // const speed = 10;
-
-        // // WASD entity move
-
-        // if(this.keysPressed['s'] === true){
-        //     this.entities.forEach((entity) => {
-        //         entity.y += speed;
-        //     });
-        // }
-        // if(this.keysPressed['w'] === true){
-        //     this.entities.forEach((entity) => {
-        //         entity.y -= speed;
-        //     });
-        // }
-
-        // // Mouse move
-        // if(this.mousePressed === true){
-        //     this.entities.forEach(entity => {
-        //         entity.x = this.mousePosX;
-        //         entity.y = this.mousePosY;
-        //     });
-        // }
-
         this.entities.forEach(entity => {
             entity.update(this.lastTick, this.keysPressed);
         });
@@ -112,15 +75,8 @@ class Game {
         ctx.fillText(`${this.lastSec}`.split('.')[0], can.width, DEBUG_SIZE * 3);
         ctx.fillText(`${this.lastFps}`.slice(0, 5), can.width, DEBUG_SIZE * 4);
 
-
-        // Mouse
-        ctx.fillText(`${this.mousePosX}, ${this.mousePosY}`, can.width, DEBUG_SIZE * 5);
-        if (this.mousePressed) {
-            ctx.fillText('Click!', can.width, DEBUG_SIZE * 6);
-        }
-
         // Keyboard
-        ctx.fillText(`${Object.keys(this.keysPressed)}`, can.width, DEBUG_SIZE * 7);
+        ctx.fillText(`${Object.keys(this.keysPressed)}`, can.width, DEBUG_SIZE * 5);
 
 
     }

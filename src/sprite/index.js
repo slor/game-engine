@@ -1,5 +1,5 @@
+// Load a sprite sheet once.
 class Loader {
-	// Load a sprite sheet once.
 	constructor(src, loadedCallback){
 		this.sheet = new Image();
 		this.sheet.addEventListener('load', loadedCallback, false);
@@ -8,6 +8,7 @@ class Loader {
 }
 
 
+// An image that can be positioned and draw itsel.
 class Sprite {
 	// slice a sprite from a sheet
 	constructor(sheet, ctx, sx, sy, sw, sh){

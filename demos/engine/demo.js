@@ -7,13 +7,13 @@ const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.pn
     const idle = new ge.Animation(loader.sheet, game.context, 
         [[15, 11, 21, 44],
          [49, 11, 21, 44],
-         [85, 11, 21, 44]], 10, true
+         [85, 11, 21, 44]], true
     );
 
     const duck = new ge.Animation(loader.sheet, game.context,
         [[149, 11, 21, 44],
          [180, 11, 21, 44],
-         [213, 11, 21, 44]], 5
+         [213, 11, 21, 44]]
     );
 
     let richter = new ge.Entity(20, 20)

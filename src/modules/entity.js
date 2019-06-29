@@ -42,7 +42,7 @@ class Entity{
 		if(this.nextAnimation[this.nextAnimation.length - 1]){
 			this.animation = this.nextAnimation.pop().rewind();
 		}
-		this.animation.advance(this.time);
+		this.animation.advance();
 	}
 
 	draw(){

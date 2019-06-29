@@ -1,27 +1,34 @@
 class Game {
     constructor(window) {
-        this.SECOND = 1000.0;
-        this.TICK = 1000.0 / 60.0; // In ms
-        this.DEBUG = true;
-        this.SMOOTH = false;
-
-        this.keysPressed = {};
-        this.mousePosX = 0;
-        this.mousePosY = 0;
-        this.mousePressed = false;
+        // Time inits.
+        this.SECOND_MS = 1000.0;
+        this.TICK_MS = Math.floor(this.SECOND_MS / 60.0)
         
-        this.lastSec = 0; // Timestamp in ms when we last did 1000ms of frames
-        this.lastTick = 0; // Timestamp in ms when we last did one TICK
-        this.lastFps = 0; // Frames/seconds
-        this.framesLastSec = 0; // Frames since last secthis
-
-        this.window = window;
-        this.document = this.window.document;
-        this.canvas = this.document.getElementById("screen");
-        this.context = this.canvas.getContext('2d');
+        // Context and cavas inits.
+        const canvas = window.document.getElementById("screen");
+        this.context = canvas.getContext('2d');
+        this.context.imageSmoothingEnabled = false;
+        this.SCREEN_WIDTH = canvas.width;
+        this.SCREEN_HEIGHT = canvas.height;
+        
+        // Game state inits.
         this.entities = [];
+        this.keysPressed = {};
+        this.nowMs;
+        this.nowSec;
+        this.tickSizeMs;
+        this.tickSumMs = 0;
+        this.tickCount = 0;
 
-        this.context.imageSmoothingEnabled = this.SMOOTH;
+        this.DEBUG = true;
+        this.debugState = {
+            font: '16px courier',
+            fontFillStyle: 'black',
+            textAlign:'right',
+            rowHeight: 16,
+            tickSizeBuckets: {},
+            tickSizeBucketNames: []
+        }
     }
 
     keyDown(e){
@@ -33,26 +40,19 @@ class Game {
     }    
     
     frame(now){
-        const timeSinceLastTick = now - this.lastTick;
+        this.tickSizeMs = Math.floor(now) - this.nowMs || 0;
+        this.nowMs = Math.floor(now);
+        this.nowSec = Math.floor(this.nowMs / this.SECOND_MS);
+        this.tickCount++;
+        this.tickSumMs += this.nowMs;
 
-        if (timeSinceLastTick >= this.TICK) {
-            this.lastTick++;
-            this.framesLastSec++;
-            this.update();
-            this.draw();
-        }
-
-        const deltaSecs = now / 1000.0;
-        if (deltaSecs >= this.lastSec + 1 ) {
-            this.lastSec = deltaSecs;
-            this.lastFps = this.framesLastSec;
-            this.framesLastSec = 0;
-        }
+        this.update();
+        this.draw();
     }
 
     update(){
         const world = {
-            'time': this.lastTick,
+            'time': this.nowMs,
             'keysPressed': this.keysPressed
         }
         
@@ -62,28 +62,46 @@ class Game {
     }
 
     clear(){
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.clearRect(0, 0, this.SCREEN_WIDTH, this.SCREEN_HEIGHT);
+    }
+
+    // Draw a single row of debug info in
+    // the next available row.
+    drawDebugRow(msg, row){
+        this.context.fillText(msg, this.SCREEN_WIDTH, this.debugState.rowHeight * row);
     }
 
     drawDebugInfo(){
-        const ctx = this.context;
-        const can = this.canvas;
+        this.context.fillStyle = this.debugState.fillStyle;
+        this.context.font = this.debugState.font;
+        this.context.textAlign = this.debugState.textAlign;
+        
+        // Capture the distribution of tick sizes in ms.
+        if(this.debugState.tickSizeBuckets[this.tickSizeMs]){
+            this.debugState.tickSizeBuckets[this.tickSizeMs] += 1;
+        } else {
+            this.debugState.tickSizeBuckets[this.tickSizeMs] = 1;
+            this.debugState.tickSizeBucketNames.push(this.tickSizeMs);
+        }
 
-        // Frame and timing info
-        const DEBUG_SIZE = 16; //px
-        ctx.fillStyle = 'black';
-        ctx.font = `${DEBUG_SIZE}px sans-serif`;
-        ctx.textAlign = 'right';
+        let row = 1;
+        this.drawDebugRow(`Time: ${this.nowMs}`, row++);
+        this.drawDebugRow(`Ticks: ${this.nowMs}`, row++);
+        this.drawDebugRow(`Tick length: ${this.tickSizeMs}ms`, row++);
+        this.drawDebugRow('', row++);
+        this.drawDebugRow('Tick length distribution', row++);
+        this.drawDebugRow('------------------------', row++);
+        this.debugState.tickSizeBucketNames.sort().forEach((name) => {
+            const count = this.debugState.tickSizeBuckets[name];
 
-        ctx.fillText(`${this.lastTick}`.split('.')[0], can.width, DEBUG_SIZE);
-        ctx.fillText(`${this.framesLastSec}`, can.width, DEBUG_SIZE * 2);
-        ctx.fillText(`${this.lastSec}`.split('.')[0], can.width, DEBUG_SIZE * 3);
-        ctx.fillText(`${this.lastFps}`.slice(0, 5), can.width, DEBUG_SIZE * 4);
-
-        // Keyboard
-        ctx.fillText(`${Object.keys(this.keysPressed)}`, can.width, DEBUG_SIZE * 5);
-
-
+            this.drawDebugRow(`${name}ms...${count}`, row++);
+        });
+        this.drawDebugRow('', row++);
+        this.drawDebugRow(`Tick stats`, row++);
+        this.drawDebugRow(`----------`, row++);
+        this.drawDebugRow(`Count: ${this.tickCount}`, row++);
+        this.drawDebugRow(`Sum: ${this.tickSumMs}ms`, row++);
+        this.drawDebugRow(`Mean: ${Math.floor(this.tickSumMs / this.tickCount) }`, row++);
     }
 
     draw() {

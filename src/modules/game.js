@@ -44,7 +44,7 @@ class Game {
         this.nowMs = Math.floor(now);
         this.nowSec = Math.floor(this.nowMs / this.SECOND_MS);
         this.tickCount++;
-        this.tickSumMs += this.nowMs;
+        this.tickSumMs += this.tickSizeMs;
 
         this.update();
         this.draw();
@@ -85,7 +85,8 @@ class Game {
         }
 
         let row = 1;
-        this.drawDebugRow(`Time: ${this.nowMs}`, row++);
+        let mean = Math.floor(this.tickSumMs / this.tickCount);
+        
         this.drawDebugRow(`Ticks: ${this.nowMs}`, row++);
         this.drawDebugRow(`Tick length: ${this.tickSizeMs}ms`, row++);
         this.drawDebugRow('', row++);
@@ -101,7 +102,8 @@ class Game {
         this.drawDebugRow(`----------`, row++);
         this.drawDebugRow(`Count: ${this.tickCount}`, row++);
         this.drawDebugRow(`Sum: ${this.tickSumMs}ms`, row++);
-        this.drawDebugRow(`Mean: ${Math.floor(this.tickSumMs / this.tickCount) }`, row++);
+        this.drawDebugRow(`Mean: ${mean}ms`, row++);
+        
     }
 
     draw() {

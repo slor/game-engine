@@ -3,7 +3,7 @@ import * as ge from '../../src/main.js';
 
 let game = new ge.Game(window);
 
-const loader = new ge.Loader('http://localhost:8000/resources/10340.png', function (){
+const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.png', function (){
     const idle = new ge.Animation(loader.sheet, game.context, 
         [[15, 11, 21, 44],
          [49, 11, 21, 44],

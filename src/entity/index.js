@@ -1,4 +1,7 @@
-const sprite = require('../sprite');
+// const sprite = require('../sprite');
+
+import { Sprite } from '../sprite/index.js';
+
 
 // A "thing" in the game world. 
 //
@@ -61,7 +64,7 @@ class Animation{
 
 		this.sprites = [];
 		slices.map(slice => {
-			this.sprites.push(new sprite.Sprite(spriteSheet, context, ...slice));
+			this.sprites.push(new Sprite(spriteSheet, context, ...slice));
 		});
 		
 		this.loop = loop;
@@ -114,7 +117,9 @@ class Animation{
 }
 
 
-module.exports = {
-	"Entity": Entity,
-	"Animation": Animation
-}
+// module.exports = {
+// 	"Entity": Entity,
+// 	"Animation": Animation
+// }
+
+export { Entity, Animation };

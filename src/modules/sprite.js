@@ -26,9 +26,4 @@ class Sprite {
 }
 
 
-// module.exports = {
-// 	"Loader": Loader,
-// 	"Sprite": Sprite
-// };
-
 export { Loader, Sprite };

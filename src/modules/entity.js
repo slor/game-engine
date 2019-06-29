@@ -10,7 +10,6 @@ class Entity{
 		this.stateHandlers = {};
 		this.animation;
 		this.nextAnimation = [];
-		this.time;
 	}
 
 	// Register a handler to call when the entity is in a certain
@@ -30,19 +29,17 @@ class Entity{
 	}
 
 	// Handle the current state based on the entity and the game world.
-	// Drive the animation based on the state, which are 1:1 for now.
 	update(world){
 		// If this is the first update, then we must rewind the animation
 		// later
-		this.time = world.time;
 		this.stateHandler(this, world);
-
-		this.animation.x = this.x;
-		this.animation.y = this.y;
+		
 		if(this.nextAnimation[this.nextAnimation.length - 1]){
 			this.animation = this.nextAnimation.pop().rewind();
 		}
 		this.animation.advance();
+		this.animation.x = this.x;
+		this.animation.y = this.y;
 	}
 
 	draw(){

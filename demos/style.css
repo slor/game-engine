@@ -7,6 +7,11 @@ body {
     background-color: white;
 }
 
+#debug {
+    border: 1px dotted gray;
+    background-color: white;
+}
+
 
 #canvasContainer {
 	height: 100%;

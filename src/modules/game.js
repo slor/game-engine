@@ -99,8 +99,5 @@ class Game {
     }
 }
 
-// module.exports = {
-//     "Game": Game
-// }
 
 export { Game };

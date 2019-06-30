@@ -9,7 +9,8 @@ const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.pn
     const idle = new ge.Animation(loader.sheet, game.context, 
         [[15, 11, 21, 44],
          [49, 11, 21, 44],
-         [85, 11, 21, 44]], 'idle', true
+         [85, 11, 21, 44],
+         [49, 11, 21, 44]], 'idle', true
     );
 
     const duck = new ge.Animation(loader.sheet, game.context,

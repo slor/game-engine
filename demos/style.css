@@ -5,15 +5,19 @@ body {
 #screen {
     border: 1px dotted gray;
     background-color: white;
+    /*position: absolute;*/
+    /*z-index: 1;*/
 }
 
 #debug {
-    border: 1px dotted gray;
+    /*border: 1px dotted gray;*/
     background-color: white;
+    /*position: absolute;*/
+    /*z-index: 2;*/
 }
 
 
-#canvasContainer {
+#container {
 	height: 100%;
 	width: 100%;
 	display: flex;

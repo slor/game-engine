@@ -2,7 +2,7 @@ import * as ge from '../../src/main.js';
 
 window.GE_DEBUG = true;
 
-let game = new ge.Game(window, 10, true);
+let game = new ge.Game(window, 12, true);
 
 
 const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.png', function (){
@@ -22,6 +22,17 @@ const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.pn
     const stand = new ge.Animation(loader.sheet, game.context,
         [[180, 10, 23, 45],
          [149, 10, 22, 45]], 'stand'
+    );
+
+    const attack = new ge.Animation(loader.sheet, game.context,
+        [[9, 179, 31, 45],
+         [50, 179, 43, 46],
+         [103, 179, 45, 46],
+         [159, 179, 41, 46],
+         [216, 179, 40, 46],
+         [268, 179, 66, 46],
+         [349, 179, 34, 46],
+         ], 'attack'
     );
 
     const walk = new ge.Animation(loader.sheet, game.context,
@@ -56,12 +67,19 @@ const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.pn
         entity.nextAnimation.push(walk);
     }
 
+    const cueAttack = (entity) => {
+        entity.state = 'ATTACK';
+        entity.nextAnimation.push(attack);
+    }
+
     let richter = new ge.Entity(20, 20)
     .registerState('IDLE', function(entity, world){
         if(world.keysPressed['ArrowDown'] === true){
             cueDuck(entity);
         } else if (world.keysPressed['ArrowRight'] === true){
             cueWalk(entity);
+        } else if (world.keysPressed[' '] === true) {
+            cueAttack(entity);
         }
     }, true)
     .registerState('DUCK', function(entity, world){
@@ -80,7 +98,13 @@ const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.pn
         if (world.keysPressed['ArrowRight'] !== true){
             cueIdle(entity);
         }
-    }, true);
+    }, true)
+    .registerState('ATTACK', function(entity, world){
+        if(this.animation.finished === true){
+            cueIdle(entity);
+        }
+    });
+
 
     game.entities.push(richter);
 

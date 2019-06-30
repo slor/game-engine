@@ -4,7 +4,7 @@ body {
 
 #screen {
     border: 1px dotted gray;
-    background-color: white;
+    background-color: cyan;
     /*position: absolute;*/
     /*z-index: 1;*/
 }

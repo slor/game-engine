@@ -16,6 +16,7 @@ class Animation{
 		
 		this.loop = loop;
 		this.index = -1;
+		this.finished = false;
 	}
 
 	get sprite(){
@@ -34,21 +35,31 @@ class Animation{
 	// Reset to the first sprite in the animation.
 	rewind(){
 		this.index = -1;
+		this.finished = false;
 
 		return this;
 	}
 
-	// Advance to the next sprite in the animation.
+	// Pick the sprite to draw next.
 	advance(){
 		this.index++;
 
 		// Advance to the next frame. But if we're at the end, then either 
-		// loop back around or stay on the last frame.
-		if(this.loop === true && this.index === this.sprites.length){
-			this.index = 0;
-		} else if(this.index === this.sprites.length) {
-			this.index--;
+		// loop back around or stay on the last sprite.
+		if(this.index === this.sprites.length){
+			if(this.loop === true){
+				this.index = 0;
+			} else {
+				this.index--;
+			}
+		} 
+		
+		// If the index is on the last sprite, we're finished (no more sprites).
+		if(this.index === this.sprites.length - 1) {
+			this.finished = true;
 		}
+
+		window.console.debug(`${this.debugName} ${this.index}`);
 	}
 }
 

@@ -1,0 +1,40 @@
+body {
+	background-color: gray;
+}
+
+#ui {
+    display: grid;
+    grid-template-areas: 
+        'header header header'
+        'tools canvas output';
+}
+
+#header {
+    grid-area: header;
+}
+
+#tools {
+    grid-area: tools;
+}
+
+#canvas {
+    grid-area: canvas;
+}
+
+#display {
+	cursor: url("myimage.png"), crosshair;
+}
+
+#output {
+    grid-area: output;    
+}
+
+#masked {
+	grid-area: canvas;
+}
+
+#zoomed {
+    border: 1px solid black;
+    /*width: 300px;*/
+    /*height: 300px;*/
+}

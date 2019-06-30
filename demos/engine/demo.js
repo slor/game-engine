@@ -7,44 +7,41 @@ let game = new ge.Game(window, 12, true);
 
 const loader = new ge.Loader('http://localhost:8000/demos/engine/static/10340.png', function (){
     const idle = new ge.Animation(loader.sheet, game.context, 
-        [[15, 10, 21, 45],
-         [49, 10, 21, 45],
-         [85, 10, 21, 45],
-         [49, 10, 21, 45]], 'idle', true
+        [[15, 11, 21, 44]], 'idle', true
     );
 
     const duck = new ge.Animation(loader.sheet, game.context,
-        [[149, 10, 22, 45],
-         [180, 10, 23, 45],
-         [213, 10, 23, 45]], 'duck'
+        [[149, 18, 21, 36],
+         [180, 25, 22, 29],
+         [213, 27, 22, 27]], 'duck'
     );
 
     const stand = new ge.Animation(loader.sheet, game.context,
-        [[180, 10, 23, 45],
-         [149, 10, 22, 45]], 'stand'
+        [[180, 25, 22, 29],
+         [149, 18, 21, 36]], 'stand'
     );
 
     const attack = new ge.Animation(loader.sheet, game.context,
-        [[9, 179, 31, 45],
-         [50, 179, 43, 46],
-         [103, 179, 45, 46],
-         [159, 179, 41, 46],
-         [216, 179, 40, 46],
-         [268, 179, 66, 46],
-         [349, 179, 34, 46],
-         ], 'attack'
+        [[8, 181, 31, 42],
+         [50, 181, 42, 43],
+         [103, 181, 44, 42],
+         [160, 180, 39, 43],
+         [216, 184, 39, 39],
+         [268, 184, 65, 39],
+         [349, 184, 33, 39]], 'attack'
     );
 
     const walk = new ge.Animation(loader.sheet, game.context,
-        [[272, 10, 26, 45],
-         [307, 10, 24, 45],
-         [340, 10, 16, 45],
-         [368, 10, 18, 45],
-         [395, 10, 26, 45],
-         [430, 10, 19, 45],
-         [459, 10, 16, 45],
-         [485, 10, 20, 45]
-         ], 'walk', true
+        [[180, 25, 22, 29],
+         [149, 18, 21, 36],
+         [272, 12, 25, 42],
+         [308, 11, 22, 43],
+         [340, 10, 15, 44],
+         [368, 11, 17, 43],
+         [395, 12, 25, 42],
+         [430, 11, 18, 43],
+         [459, 10, 15, 44],
+         [485, 11, 19, 43]], 'walk', true
     );
 
     const cueDuck = (entity) => {

@@ -9,6 +9,22 @@
 //
 // Saves a lot of time when createing new animations.
 
+class XY{
+	constructor(x, y){
+		if(typeof(x) === 'object'){
+			this.x = x[0];
+			this.y = x[1];
+		} else {
+			this.x = x;
+			this.y = y;
+		}
+	}
+
+	serialize(){
+		return JSON.stringify([this.x, this.y]);
+	}
+}
+
 class Rgb{
 	constructor(r, g, b){
 		this.r = r;
@@ -94,31 +110,39 @@ class Canvas{
 		  		data[i + 2] = this.white.b;
 			}		 	
 		}
-
+		
 		return imageData;
 	}
 
 	ffValidNeighbors(x, y){
 		const neighbors = [
-			this.getImageData(x - 1, y - 1, 1 , 1), // NW
-			this.getImageData(x - 1, y    , 1 , 1),     // W
-			this.getImageData(x - 1, y + 1, 1 , 1), // SW
-			this.getImageData(x    , y - 1, 1 , 1), // N
-			this.getImageData(x    , y + 1, 1 , 1), // S
-			this.getImageData(x + 1, y - 1, 1 , 1), // NE
-			this.getImageData(x + 1, y    , 1 , 1),     // E
-			this.getImageData(x + 1, y + 1, 1 , 1), // SE
+			[x - 1, y - 1], // NW
+			[x - 1, y    ], // W
+			[x - 1, y + 1], // SW
+			[x    , y - 1], // N
+			[x    , y + 1], // S
+			[x + 1, y - 1], // NE
+			[x + 1, y    ], // E
+			[x + 1, y + 1]  // SE
 		];
 
-		return neighbors.filter((neighbor) => {
-			return this.ffTargetColor.compareAb(neighbor);
-		});
+		return neighbors.reduce((acc, neighbor) => {
+			const xy = new XY(neighbor);
+
+			const maybe = this.getImageData(xy.x, xy.y, 1, 1).data;
+			if(this.ffTargetColor.compareAb(maybe)){
+				acc.push(xy.serialize());
+			}
+
+			return acc;
+		}, []);
 	}
 
 	ffWorkOn(x, y){
 		let iData = this.getImageData(x, y, 1, 1);
+		const xy = new XY(x, y).serialize();
 
-		if(this.ffVisited.includes(iData)){
+		if(this.ffVisited.includes(xy)){
 			return;
 		}
 
@@ -133,7 +157,7 @@ class Canvas{
 		iData.data[1] = this.ffFillColor.g;
 		iData.data[2] = this.ffFillColor.b;
 		this.setImageData(iData, x, y);
-		this.ffVisited.push(iData);
+		this.ffVisited.push(xy);
 	}
 
 	floodFill(x, y, targetColor, fillColor){
@@ -144,7 +168,8 @@ class Canvas{
 
 		this.ffWorkOn(x, y);
 		while(this.ffStack.length > 0){
-			this.ffWorkOn(this.ffStack.pop());
+			const xy = this.ffStack.pop();
+			this.ffWorkOn(...JSON.parse(xy));
 		}
 	}
 }

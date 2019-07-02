@@ -9,22 +9,11 @@
 //
 // Saves a lot of time when createing new animations.
 
-class Px{
-	constructor(r, g, b, a=1.0){
-		this.r;
-		this.g;
-		this.b;
-		this.a;
-	}
-
-	asArrayBuffer(){
-		let ab = new ArrayBuffer(4);
-		ab[0] = this.r;
-		ab[1] = this.g;
-		ab[2] = this.b;
-		ab[3] = this.a;
-
-		return ab;
+class Rgb{
+	constructor(r, g, b){
+		this.r = r;
+		this.g = g;
+		this.b = b;
 	}
 
 	compareAb(arrayBuffer){
@@ -34,12 +23,10 @@ class Px{
 		if(arrayBuffer[1] != this.g){
 			return false;
 		}
-		if(arrayBuffer[2] != this.g){
+		if(arrayBuffer[2] != this.b){
 			return false;
 		}
-		if(arrayBuffer[3] != this.b){
-			return false;
-		}
+
 		return true;
 	}
 }
@@ -47,20 +34,33 @@ class Px{
 class Canvas{
 	constructor(querySelector){
 		this.canvas = document.querySelector(querySelector);
-		this.white = new Px(255, 255, 255);
-		this.black = new Px(0, 0, 0);
+		this.white = new Rgb(255, 255, 255);
+		this.black = new Rgb(0, 0, 0);
+		this.red = new Rgb(255, 0, 0);
+		this.blue = new Rgb(0, 0, 255);
+
+		// Flood fill
+		this.ffVisited;
+		this.ffStack;
+		this.ffTargetColor;
+		this.ffFillColor;
 	}
 
 	get ctx(){
 		return this.canvas.getContext('2d');
 	}
 
-	get imageData(){
-		return this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);	
+	getImageData(x=null, y=null, width=null, height=null){
+		return this.ctx.getImageData(x || 0, y || 0, width || this.canvas.width, height || this.canvas.height);	
 	}
 
-	set imageData(imageData){
-		this.ctx.putImageData(imgData, 0, 0);
+	setImageData(imageData, x=null, y=null, width=null, height=null){
+		this.ctx.putImageData(imageData, x || 0, y || 0, width || imageData.width, height || imageData.height);
+	}
+
+	sizeToImageData(imageData){
+		this.canvas.width = imageData.width;
+		this.canvas.height = imageData.heigth;
 	}
 
 	drawImage(dataURL){
@@ -70,34 +70,81 @@ class Canvas{
 	}
 
 	// Returns a mask ImageData of the canvas.
-	mask(red, green, blue, alpha=1.0){
+	mask(red, green, blue){
 		let imageData = this.imageData;
 		let data = imageData.data;
 
-		const target = new Px(red, green, blue, alpha);
+		const target = new Rgb(red, green, blue);
 		
 		for (let i = 0; i < data.length; i += 4) {
 			// set to black if target color, else set white.
-			if(target.compareAb(data.slice[i, i + 4])){
+			const test = data.slice(i, i + 3);
+			if(target.compareAb(test)){
 				data[i + 0] = this.black.r;
 				data[i + 1] = this.black.g;
 		  		data[i + 2] = this.black.b;
-		  		data[i + 3] = this.black.a;
 			} else {
 				data[i + 0] = this.white.r;
 				data[i + 1] = this.white.g;
 		  		data[i + 2] = this.white.b;
-		  		data[i + 3] = this.white.a;
 			}		 	
 		}
 
 		return imageData;
 	}
+
+	ffValidNeighbors(x, y){
+		const neighbors = [
+			this.getImageData(x    , y - 1, 1 , 1), // N
+			this.getImageData(x + 1, y - 1, 1 , 1), // NE
+			this.getImageData(x + 1, y    , 1 , 1),     // E
+			this.getImageData(x + 1, y + 1, 1 , 1), // SE
+			this.getImageData(x    , y + 1, 1 , 1), // S
+			this.getImageData(x - 1, y + 1, 1 , 1), // SW
+			this.getImageData(x - 1, y    , 1 , 1),     // W
+			this.getImageData(x - 1, y - 1, 1 , 1), // NW
+		];
+
+		return neighbors.filter((neighbor) => {
+			return this.ffTargetColor.compareAb(neighbor);
+		});
+	}
+
+	ffWorkOn(x, y){
+		let iData = this.getImageData(x, y, 1, 1);
+
+		if(this.ffVisited.includes(iData)){
+			return;
+		}
+
+		if(!this.targetColor.compareAb(iData.data)){
+			return;
+		}
+
+		const validNeighbors = this.ffVisitLater(x, y);
+		this.ffStack.push(...validNeighbors);
+		this.ffVisited.push(iData);
+
+		arb.data[0] = this.ffFillColor.r;
+		arb.data[1] = this.ffFillColor.g;
+		arb.data[2] = this.ffFillColor.b;
+		this.setImageData(arb, x, y);
+	}
+
+	floodFill(x, y, targetColor, fillColor){
+		this.ffTargetColor = targetColor;
+		this.ffFillColor = fillColor;
+		this.stack = [];
+		this.visited = [];
+
+		ffWorkOn(x, y);
+		while(this.ffStack.length > 0){
+			ffWorkOn(stack.pop());
+		}
+	}
 }
 
-
-
-// canvas.addEventListener('mousedown', e => {
+canvas.addEventListener('mousedown', e => {
 // 	const rect = canvas.getBoundingClientRect();
 // 	const x = Math.floor(e.clientX - rect.left);
 // 	const y = Math.floor(e.clientY - rect.top);
@@ -192,7 +239,7 @@ class Canvas{
 
 // })
 
-document.querySelector("#filePicker").addEventListener('change', function(){
+document.querySelector("#filePicker").addEventListener('change', function () {
 	let img = document.createElement('img');
 	img.file = this.files[0];
 
@@ -209,4 +256,15 @@ document.querySelector("#filePicker").addEventListener('change', function(){
 	};
 
     fr.readAsDataURL(img.file);
+});
+
+document.querySelector("#mask").addEventListener('click', function () {
+	const red = document.querySelector("#red").value;
+	const green = document.querySelector("#green").value;
+	const blue = document.querySelector("#blue").value;
+	console.debug(`Will mask out rgba(${red}, ${green}, ${blue}, 1.0)`);
+
+	const canvas = new Canvas('#display');
+	const maskCanvas = new Canvas('#masked');
+	maskCanvas.imageData = canvas.mask(parseInt(red), parseInt(green), parseInt(blue));
 });

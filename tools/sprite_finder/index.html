@@ -9,9 +9,17 @@
     <body>
         <form>
       		<input type="file" name="Sprite Sheet" id="filePicker" />
+            <div>Mask Red: <input type="text" name="red" id="red"></div>
+            <div>Mask Green: <input type="text" name="green" id="green"></div>
+            <div>Mask Blue: <input type="text" name="blue" id="blue"></div>
     	</form>
+        <button id="mask">Mask</button>
 		
-		<canvas id="display"></canvas>
+        <div id="canvasContainer">
+		  <canvas id="display"></canvas>
+          <canvas id="masked"></canvas>
+        </div>
+
 		<div id="spriteListContainer">
 			<h1>Sprites:</h1>
 			<ol id="spriteList">

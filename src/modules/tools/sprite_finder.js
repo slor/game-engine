@@ -32,8 +32,8 @@ class Rgb{
 }
 
 class Canvas{
-	constructor(querySelector){
-		this.canvas = document.querySelector(querySelector);
+	constructor(canvas){
+		this.canvas = canvas;
 		this.white = new Rgb(255, 255, 255);
 		this.black = new Rgb(0, 0, 0);
 		this.red = new Rgb(255, 0, 0);
@@ -44,6 +44,11 @@ class Canvas{
 		this.ffStack;
 		this.ffTargetColor;
 		this.ffFillColor;
+	}
+
+	getEventCoordinates(e){
+		const rect = this.canvas.getBoundingClientRect();
+		return [e.clientX - rect.left, e.clientY - rect.top];
 	}
 
 	get ctx(){
@@ -95,14 +100,14 @@ class Canvas{
 
 	ffValidNeighbors(x, y){
 		const neighbors = [
+			this.getImageData(x - 1, y - 1, 1 , 1), // NW
+			this.getImageData(x - 1, y    , 1 , 1),     // W
+			this.getImageData(x - 1, y + 1, 1 , 1), // SW
 			this.getImageData(x    , y - 1, 1 , 1), // N
+			this.getImageData(x    , y + 1, 1 , 1), // S
 			this.getImageData(x + 1, y - 1, 1 , 1), // NE
 			this.getImageData(x + 1, y    , 1 , 1),     // E
 			this.getImageData(x + 1, y + 1, 1 , 1), // SE
-			this.getImageData(x    , y + 1, 1 , 1), // S
-			this.getImageData(x - 1, y + 1, 1 , 1), // SW
-			this.getImageData(x - 1, y    , 1 , 1),     // W
-			this.getImageData(x - 1, y - 1, 1 , 1), // NW
 		];
 
 		return neighbors.filter((neighbor) => {
@@ -117,29 +122,29 @@ class Canvas{
 			return;
 		}
 
-		if(!this.targetColor.compareAb(iData.data)){
+		if(!this.ffTargetColor.compareAb(iData.data)){
 			return;
 		}
 
-		const validNeighbors = this.ffVisitLater(x, y);
+		const validNeighbors = this.ffValidNeighbors(x, y);
 		this.ffStack.push(...validNeighbors);
-		this.ffVisited.push(iData);
 
-		arb.data[0] = this.ffFillColor.r;
-		arb.data[1] = this.ffFillColor.g;
-		arb.data[2] = this.ffFillColor.b;
-		this.setImageData(arb, x, y);
+		iData.data[0] = this.ffFillColor.r;
+		iData.data[1] = this.ffFillColor.g;
+		iData.data[2] = this.ffFillColor.b;
+		this.setImageData(iData, x, y);
+		this.ffVisited.push(iData);
 	}
 
 	floodFill(x, y, targetColor, fillColor){
 		this.ffTargetColor = targetColor;
 		this.ffFillColor = fillColor;
-		this.stack = [];
-		this.visited = [];
+		this.ffStack = [];
+		this.ffVisited = [];
 
-		ffWorkOn(x, y);
+		this.ffWorkOn(x, y);
 		while(this.ffStack.length > 0){
-			ffWorkOn(stack.pop());
+			this.ffWorkOn(this.ffStack.pop());
 		}
 	}
 }
@@ -149,7 +154,7 @@ document.querySelector("#filePicker").addEventListener('change', function () {
 	let img = document.createElement('img');
 	img.file = this.files[0];
 
-	const canvas = new Canvas('#display');
+	const canvas = new Canvas(document.querySelector('#display'));
 
 	const fr = new FileReader();
 	fr.onload = (e) => {
@@ -170,8 +175,27 @@ document.querySelector("#mask").addEventListener('click', function () {
 	const blue = document.querySelector("#blue").value;
 	console.debug(`Will mask out rgba(${red}, ${green}, ${blue}, 1.0)`);
 
-	const canvas = new Canvas('#display');
-	const maskCanvas = new Canvas('#masked');
+	const canvas = new Canvas(document.querySelector('#display'));
+	const maskCanvas = new Canvas(document.querySelector('#masked'));
 	const mask = canvas.mask(parseInt(red), parseInt(green), parseInt(blue));
 	maskCanvas.setImageData(mask, 0, 0, true);
+});
+
+document.querySelector("#masked").addEventListener('click', function(e) {
+	const canvas = new Canvas(this);
+	const coords = canvas.getEventCoordinates(e);
+
+	console.debug(`Flood filling at (${coords[0]}, ${coords[1]})`);
+
+	canvas.floodFill(coords[0], coords[1], canvas.white, canvas.red);
+});
+
+document.querySelector("#display").addEventListener('click', function(e) {
+	const canvas = new Canvas(this);
+	const coords = canvas.getEventCoordinates(e);
+	const iData = canvas.getImageData(coords[0], coords[1], 1, 1);
+	
+	document.querySelector("#red").value = iData.data[0];
+	document.querySelector("#green").value = iData.data[1];
+	document.querySelector("#blue").value = iData.data[2];
 });

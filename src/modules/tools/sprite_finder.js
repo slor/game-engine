@@ -54,13 +54,13 @@ class Canvas{
 		return this.ctx.getImageData(x || 0, y || 0, width || this.canvas.width, height || this.canvas.height);	
 	}
 
-	setImageData(imageData, x=null, y=null, width=null, height=null){
-		this.ctx.putImageData(imageData, x || 0, y || 0, width || imageData.width, height || imageData.height);
-	}
+	setImageData(imageData, x=null, y=null, resize=false){
+		if(resize === true){
+			this.canvas.width = imageData.width;
+			this.canvas.height = imageData.height;
+		}
 
-	sizeToImageData(imageData){
-		this.canvas.width = imageData.width;
-		this.canvas.height = imageData.heigth;
+		this.ctx.putImageData(imageData, x || 0, y || 0);
 	}
 
 	drawImage(dataURL){
@@ -71,7 +71,7 @@ class Canvas{
 
 	// Returns a mask ImageData of the canvas.
 	mask(red, green, blue){
-		let imageData = this.imageData;
+		let imageData = this.getImageData();
 		let data = imageData.data;
 
 		const target = new Rgb(red, green, blue);
@@ -144,100 +144,6 @@ class Canvas{
 	}
 }
 
-canvas.addEventListener('mousedown', e => {
-// 	const rect = canvas.getBoundingClientRect();
-// 	const x = Math.floor(e.clientX - rect.left);
-// 	const y = Math.floor(e.clientY - rect.top);
-
-// 	console.debug(`mouse down at (${x}, ${y})`);
-
-// 	if(maskOutColor === undefined){
-// 		let imageData = ctx.getImageData(x, y, 1, 1);
-// 		maskOutColor = imageData.data.slice(1, 4);
-
-// 	} else {
-
-
-// 		let floodFillCalls = 0;
-// 		let floodFillFills = 0;
-
-// 		let xMax = 0;
-// 		let xMin = Infinity;
-// 		let yMax = 0;
-// 		let yMin = Infinity;
-// 		let foundSprite = false;
-
-// 		function floodFill(x, y){
-// 			floodFillCalls++;
-			
-// 			let imageData = ctx.getImageData(x, y, 1, 1);
-// 			let data = imageData.data;
-// 			let target = [255, 255, 255];
-// 			let replacement = [255, 255, 0];
-
-// 			if(data[0] === replacement[0] && data[1] === replacement[1] && data[2] === replacement[2]){
-// 				return;
-// 			}
-
-// 			if(data[0] !== target[0] || data[1] !== target[1] || data[2] !== target[2]){
-// 				return;
-// 			}
-
-// 			floodFillFills++;
-// 			foundSprite = true;
-// 			data[0] = replacement[0];
-// 			data[1] = replacement[1];
-// 			data[2] = replacement[2];
-// 			ctx.putImageData(imageData, x, y);
-
-// 			if(x > xMax){
-// 				xMax = x;
-// 			}
-// 			if(x < xMin){
-// 				xMin = x;
-// 			}
-// 			if(y > yMax){
-// 				yMax = y;
-// 			}
-// 			if(y < yMin){
-// 				yMin = y;
-// 			}
-
-// 			floodFill(x, y + 1);
-// 			floodFill(x, y - 1);
-// 			floodFill(x - 1, y);
-// 			floodFill(x + 1, y);
-// 		}
-
-// 		floodFill(x, y);
-
-// 		if(!foundSprite){
-// 			return;
-// 		}
-
-// 		console.debug(`floodFill() calls: ${floodFillCalls}`);
-// 		console.debug(`filled ${floodFillFills} pixels`);
-
-// 		const w = xMax - xMin;
-// 		const h = yMax - yMin;
-// 		console.debug(`Bounding box of filled area: (${xMin}, ${yMin}, ${w}, ${h})`);
-// 		ctx.strokeStyle = 'red';
-// 		ctx.strokeRect(xMin, yMin, w, h);
-// 		ctx.fillStyle = 'rgba(255, 255, 0, 0.60)';
-// 		ctx.fillRect(xMin, yMin, w, h);
-// 		ctx.font = '16px courier';
-// 		ctx.textAlign = 'center';
-// 	 	ctx.textBaseline = 'middle'; 	
-// 		ctx.fillStyle = 'black';
-// 		ctx.fillText(spriteCount++, xMin + Math.floor(w/2), yMin + Math.floor(h/2));
-
-// 		let li = document.createElement('li');
-// 		li.innerText = `[${xMin}, ${yMin}, ${w}, ${h}]`;
-// 		const list = document.querySelector('#spriteList');
-// 		list.appendChild(li);
-// 	}
-
-// })
 
 document.querySelector("#filePicker").addEventListener('change', function () {
 	let img = document.createElement('img');
@@ -266,5 +172,6 @@ document.querySelector("#mask").addEventListener('click', function () {
 
 	const canvas = new Canvas('#display');
 	const maskCanvas = new Canvas('#masked');
-	maskCanvas.imageData = canvas.mask(parseInt(red), parseInt(green), parseInt(blue));
+	const mask = canvas.mask(parseInt(red), parseInt(green), parseInt(blue));
+	maskCanvas.setImageData(mask, 0, 0, true);
 });

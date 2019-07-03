@@ -60,6 +60,10 @@ class Canvas{
 		this.ffStack;
 		this.ffTargetColor;
 		this.ffFillColor;
+		this.ffXmax;
+		this.ffXmin;
+		this.ffYmax;
+		this.ffYmin;
 	}
 
 	getEventCoordinates(e){
@@ -110,7 +114,7 @@ class Canvas{
 		  		data[i + 2] = this.white.b;
 			}		 	
 		}
-		
+
 		return imageData;
 	}
 
@@ -158,6 +162,20 @@ class Canvas{
 		iData.data[2] = this.ffFillColor.b;
 		this.setImageData(iData, x, y);
 		this.ffVisited.push(xy);
+
+		// Used for calculating a bounding rectangle of the filled area.
+		if(x > this.ffXmax){
+			this.ffXmax = x;
+		}
+		if(x < this.ffXmin){
+			this.ffXmin = x;
+		}
+		if(y > this.ffYmax){
+			this.ffYmax = y;
+		}
+		if(y < this.ffYMin){
+			this.ffYmin = y;
+		}
 	}
 
 	floodFill(x, y, targetColor, fillColor){
@@ -165,6 +183,10 @@ class Canvas{
 		this.ffFillColor = fillColor;
 		this.ffStack = [];
 		this.ffVisited = [];
+		this.ffXmax = -1;
+		this.ffXmin = Infinity;
+		this.ffYmax = -1;
+		this.ffYMin = Infinity;
 
 		this.ffWorkOn(x, y);
 		while(this.ffStack.length > 0){
@@ -173,6 +195,7 @@ class Canvas{
 		}
 	}
 }
+
 
 
 document.querySelector("#filePicker").addEventListener('change', function () {
@@ -210,9 +233,22 @@ document.querySelector("#masked").addEventListener('click', function(e) {
 	const canvas = new Canvas(this);
 	const coords = canvas.getEventCoordinates(e);
 
-	console.debug(`Flood filling at (${coords[0]}, ${coords[1]})`);
-
 	canvas.floodFill(coords[0], coords[1], canvas.white, canvas.red);
+
+
+	const thumbnail = new Canvas(document.createElement('canvas'));
+	const display = new Canvas(document.querySelector('#display'));
+
+	const w = canvas.ffXmax - canvas.ffXmin;
+	const h = canvas.ffYmax - canvas.ffYmin;
+	const iData = display.getImageData(canvas.ffXmin, canvas.ffYmin, w, h);
+	thumbnail.setImageData(iData, 0, 0, true);
+
+	const li = document.createElement('li');
+	li.appendChild(thumbnail.canvas);
+	document.querySelector("#spriteList").appendChild(li);
+
+
 });
 
 document.querySelector("#display").addEventListener('click', function(e) {
@@ -224,3 +260,4 @@ document.querySelector("#display").addEventListener('click', function(e) {
 	document.querySelector("#green").value = iData.data[1];
 	document.querySelector("#blue").value = iData.data[2];
 });
+

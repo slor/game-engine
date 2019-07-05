@@ -161,21 +161,10 @@ class Canvas{
 		iData.data[1] = this.ffFillColor.g;
 		iData.data[2] = this.ffFillColor.b;
 		this.setImageData(iData, x, y);
+		this.floodFilled = true;
 		this.ffVisited.push(xy);
-
-		// Used for calculating a bounding rectangle of the filled area.
-		if(x > this.ffXmax){
-			this.ffXmax = x;
-		}
-		if(x < this.ffXmin){
-			this.ffXmin = x;
-		}
-		if(y > this.ffYmax){
-			this.ffYmax = y;
-		}
-		if(y < this.ffYMin){
-			this.ffYmin = y;
-		}
+		this.ffXs.push(x);
+		this.ffYs.push(y);
 	}
 
 	floodFill(x, y, targetColor, fillColor){
@@ -187,12 +176,45 @@ class Canvas{
 		this.ffXmin = Infinity;
 		this.ffYmax = -1;
 		this.ffYMin = Infinity;
+		this.ffXs = [];
+		this.ffYs = [];
+		this.floodFilled = false;
 
 		this.ffWorkOn(x, y);
 		while(this.ffStack.length > 0){
 			const xy = this.ffStack.pop();
 			this.ffWorkOn(...JSON.parse(xy));
 		}
+
+		this.ffXs.sort((a, b) => { 
+			if(a > b){
+				return 1;
+			}
+			if(a === b){
+				return 0;
+			}
+			if(a < b){
+				return -1;
+			} 
+		});
+		this.ffYs.sort((a, b) => { 
+			if(a > b){
+				return 1;
+			}
+			if(a === b){
+				return 0;
+			}
+			if(a < b){
+				return -1;
+			} 
+		});
+
+		this.ffXmax = this.ffXs[this.ffXs.length - 1];
+		this.ffXmin = this.ffXs[0];
+		this.ffYmax = this.ffYs[this.ffYs.length - 1];
+		this.ffYmin = this.ffYs[0];
+
+		return this.floodFilled;
 	}
 }
 
@@ -226,29 +248,43 @@ document.querySelector("#mask").addEventListener('click', function () {
 	const canvas = new Canvas(document.querySelector('#display'));
 	const maskCanvas = new Canvas(document.querySelector('#masked'));
 	const mask = canvas.mask(parseInt(red), parseInt(green), parseInt(blue));
+
+	canvas.canvas.hidden = true;
+	maskCanvas.canvas.hidden = false;
 	maskCanvas.setImageData(mask, 0, 0, true);
+});
+
+document.querySelector("#unmask").addEventListener('click', function () {
+	const canvas = new Canvas(document.querySelector('#display'));
+	const maskCanvas = new Canvas(document.querySelector('#masked'));
+	
+	canvas.canvas.hidden = false;
+	maskCanvas.canvas.hidden = true;
+});
+
+document.querySelector("#clearSpriteList").addEventListener('click', function () {
+	document.querySelector("#spriteList").innerHTML = '';
 });
 
 document.querySelector("#masked").addEventListener('click', function(e) {
 	const canvas = new Canvas(this);
 	const coords = canvas.getEventCoordinates(e);
 
-	canvas.floodFill(coords[0], coords[1], canvas.white, canvas.red);
+	const filled = canvas.floodFill(coords[0], coords[1], canvas.white, canvas.red);
 
+	if(filled){
+		const thumbnail = new Canvas(document.createElement('canvas'));
+		const display = new Canvas(document.querySelector('#display'));
 
-	const thumbnail = new Canvas(document.createElement('canvas'));
-	const display = new Canvas(document.querySelector('#display'));
+		const w = canvas.ffXmax - canvas.ffXmin;
+		const h = canvas.ffYmax - canvas.ffYmin;
+		const iData = display.getImageData(canvas.ffXmin, canvas.ffYmin, w, h);
+		thumbnail.setImageData(iData, 0, 0, true);
 
-	const w = canvas.ffXmax - canvas.ffXmin;
-	const h = canvas.ffYmax - canvas.ffYmin;
-	const iData = display.getImageData(canvas.ffXmin, canvas.ffYmin, w, h);
-	thumbnail.setImageData(iData, 0, 0, true);
-
-	const li = document.createElement('li');
-	li.appendChild(thumbnail.canvas);
-	document.querySelector("#spriteList").appendChild(li);
-
-
+		const li = document.createElement('li');
+		li.appendChild(thumbnail.canvas);
+		document.querySelector("#spriteList").appendChild(li);
+	}
 });
 
 document.querySelector("#display").addEventListener('click', function(e) {

@@ -2,25 +2,31 @@ body {
 	background-color: gray;
 }
 
-#screen {
-    border: 1px dotted gray;
-    background-color: cyan;
-    /*position: absolute;*/
-    /*z-index: 1;*/
+#ui {
+    display: grid;
+    grid-template-areas: 
+        'header header header'
+        'tools canvas output';
 }
 
-#debug {
-    /*border: 1px dotted gray;*/
-    background-color: white;
-    /*position: absolute;*/
-    /*z-index: 2;*/
+#header {
+    grid-area: header;
 }
 
+#tools {
+    grid-area: tools;
+}
 
-#container {
-	height: 100%;
-	width: 100%;
-	display: flex;
-  	justify-content: center;
-  	align-items: center;
+#canvas {
+    grid-area: canvas;
+}
+
+#output {
+    grid-area: output;    
+}
+
+#masked {
+}
+
+#display {
 }

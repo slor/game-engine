@@ -231,6 +231,8 @@ document.querySelector("#filePicker").addEventListener('change', function () {
 		img.onload = (e) => {
 			const dataURL = e.target
 			canvas.drawImage(dataURL);
+			document.querySelector("#dimensions").innerText = `${canvas.canvas.width} x ${canvas.canvas.height}`;
+			document.querySelector("#ratio").innerText = canvas.canvas.width / canvas.canvas.height;
 		}
 		const fileURL = e.target.result;
 		img.src = fileURL;
@@ -310,24 +312,29 @@ document.querySelector("#display").addEventListener('click', function(e) {
 	document.querySelector("#blue").value = iData.data[2];
 });
 
-document.querySelector("#display").addEventListener('mousemove', function(e) {
-	const canvas = new Canvas(this);
-	const coords = canvas.getEventCoordinates(e);
-	// const iData = canvas.getImageData(coords[0] - 100, coords[1] - 100 , 200, 200);
+function clamp(num, min, max){
+	return Math.min(Math.max(num, min), max);
+}
 
-	const zoomed = document.querySelector("#zoomed");
-	const ctx = zoomed.getContext('2d');
+document.querySelector("#draw").addEventListener('click', function(e) {
+	const source = document.querySelector("#display");
+	const sourceCtx = source.getContext('2d');
+	const dest = document.querySelector("#zoomed");
+	const destCtx = dest.getContext('2d');
+
+	const sX = parseInt(document.querySelector("#sX").value);
+	const sY = parseInt(document.querySelector("#sY").value);
+	const sWidth = parseInt(document.querySelector("#sWidth").value);
+	const sHeight = parseInt(document.querySelector("#sHeight").value);
+	const dX = parseInt(document.querySelector("#dX").value);
+	const dY = parseInt(document.querySelector("#dY").value);
+	const dWidth = parseInt(document.querySelector("#dWidth").value);
+	const dHeight = parseInt(document.querySelector("#dHeight").value);
+	const scale = parseInt(document.querySelector("#scale").value);
 	
-	let zoomedX = coords[0] - 100;
-	if(zoomedX < 0){
-		zoomedX = 0;
-	}
-	let zoomedY = coords[0] - 100;
-	if(zoomedY < 0){
-		zoomedY = 0;
-	}
-
-	ctx.clearRect(0,0,zoomed.width,zoomed.height);
-	ctx.drawImage(canvas.canvas, zoomedX, zoomedY, 200, 200, 0, 0, 200, 200);
+	destCtx.imageSmoothingEnabled = false;
+	destCtx.clearRect(0, 0, dest.width, dest.height);
+	destCtx.scale(scale, scale);
+	destCtx.drawImage(source, sX, sY);//,sWidth, sHeight, dX, dY,  dWidth, dHeight);
 });
 

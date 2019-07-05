@@ -13,12 +13,26 @@
                 <h2>Tools</h2>
                 <form>
                     <input type="file" name="Sprite Sheet" id="filePicker" />
-                        <div>Mask Red: <input type="text" name="red" id="red"></div>
-                        <div>Mask Green: <input type="text" name="green" id="green"></div>
-                        <div>Mask Blue: <input type="text" name="blue" id="blue"></div>
+                    <p>Dimensions: <span id="dimensions"></span></p>
+                    <p>Aspect ratio: <span id="ratio"></span></p>
+                    <p>Mask Red: <input type="text" name="red" id="red"></p>
+                    <p>Mask Green: <input type="text" name="green" id="green"></p>
+                    <p>Mask Blue: <input type="text" name="blue" id="blue"></p>
                 </form>
                 <button id="mask">Mask</button>
                 <button id="unmask">Unmask</button> 
+                <form>
+                    <div>sX: <input type="text" id="sX"></div>
+                    <div>sY: <input type="text" id="sY"></div>
+                    <div>sWidth: <input type="text" id="sWidth"></div>
+                    <div>sHeight: <input type="text" id="sHeight"></div>
+                    <div>dX: <input type="text" id="dX"></div>
+                    <div>dY: <input type="text" id="dY"></div>
+                    <div>dWidth: <input type="text" id="dWidth"></div>
+                    <div>dHeight: <input type="text" id="dHeight"></div>
+                    <div>scale: <input type="text" id="scale"></div>
+                </form>
+                <button id="draw">Draw</button>
             </div>
             <div id="canvas">
                 <h2>Canvas</h2>

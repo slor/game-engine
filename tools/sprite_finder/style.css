@@ -21,11 +21,16 @@ body {
     grid-area: canvas;
 }
 
+#display {
+	cursor: url("myimage.png"), crosshair;
+}
+
 #output {
     grid-area: output;    
 }
 
 #masked {
+	grid-area: canvas;
 }
 
 #display {

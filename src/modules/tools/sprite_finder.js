@@ -287,6 +287,19 @@ document.querySelector("#masked").addEventListener('click', function(e) {
 	}
 });
 
+document.querySelector("#masked").addEventListener('mousemove', function(e) {
+	const canvas = new Canvas(this);
+	const coords = canvas.getEventCoordinates(e);
+	const iData = canvas.getImageData(coords[0], coords[1], 1, 1);
+
+	if(iData.data[0] === 255 && iData.data[1] === 255 && iData.data[2] === 255){
+		this.style.setProperty('cursor', 'copy');
+	} else {
+		this.style.setProperty('cursor', 'auto');
+	}
+
+});
+
 document.querySelector("#display").addEventListener('click', function(e) {
 	const canvas = new Canvas(this);
 	const coords = canvas.getEventCoordinates(e);
@@ -295,5 +308,26 @@ document.querySelector("#display").addEventListener('click', function(e) {
 	document.querySelector("#red").value = iData.data[0];
 	document.querySelector("#green").value = iData.data[1];
 	document.querySelector("#blue").value = iData.data[2];
+});
+
+document.querySelector("#display").addEventListener('mousemove', function(e) {
+	const canvas = new Canvas(this);
+	const coords = canvas.getEventCoordinates(e);
+	// const iData = canvas.getImageData(coords[0] - 100, coords[1] - 100 , 200, 200);
+
+	const zoomed = document.querySelector("#zoomed");
+	const ctx = zoomed.getContext('2d');
+	
+	let zoomedX = coords[0] - 100;
+	if(zoomedX < 0){
+		zoomedX = 0;
+	}
+	let zoomedY = coords[0] - 100;
+	if(zoomedY < 0){
+		zoomedY = 0;
+	}
+
+	ctx.clearRect(0,0,zoomed.width,zoomed.height);
+	ctx.drawImage(canvas.canvas, zoomedX, zoomedY, 200, 200, 0, 0, 200, 200);
 });
 

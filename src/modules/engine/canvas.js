@@ -1,94 +1,76 @@
 import { Rgb } from './rgb.js'
-import { XY } from './xy.js'
+
+// Return x coordinate for a mouse event
+// where x is a whole number and relative
+// to the canvas' left instead of the 
+// document.
+function mouseEventCanvasX(canvas, e){
+	const rect = canvas.getBoundingClientRect();
+	return Math.floor(e.clientX - rect.left);
+}
+
+function mouseEventCanvasY(canvas, e){
+	const rect = canvas.getBoundingClientRect();
+	return Math.floor(e.clientY - rect.top)
+}
+
+// Returns a mask ImageData of the canvas.
+function mask(canvas, red, green, blue){
+	const ctx = canvas.getContext('2d');
+	let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	let data = imageData.data;
+
+	const target = new Rgb(red, green, blue);
+	
+	for (let i = 0; i < data.length; i += 4) {
+		// set to black if target color, else set white.
+		const test = Rgb.fromImageData(imageData, i);
+		if(target.compare(test)){
+			data[i + 0] = 0;
+			data[i + 1] = 0;
+	  		data[i + 2] = 0;
+		} else {
+			data[i + 0] = 255;
+			data[i + 1] = 255;
+	  		data[i + 2] = 255;
+		}		 	
+	}
+
+	return imageData;
+}
 
 class Canvas{
 	constructor(canvas){
 		this.canvas = canvas;
 		this.ctx = canvas.getContext('2d');
-		this.ctx.imageSmoothingEnabled = false;
-
-		this.white = new Rgb(255, 255, 255);
-		this.black = new Rgb(0, 0, 0);
-		this.red = new Rgb(255, 0, 0);
-		this.blue = new Rgb(0, 0, 255);
 
 		// Flood fill
 		this.ffVisited;
 		this.ffStack;
 		this.ffTargetColor;
-		this.ffFillColor;
 		this.ffXmax;
 		this.ffXmin;
 		this.ffYmax;
 		this.ffYmin;
 	}
 
-	getEventCoordinates(e){
-		const rect = this.canvas.getBoundingClientRect();
-		return [Math.floor(e.clientX - rect.left), Math.floor(e.clientY - rect.top)];
-	}
-
-	getImageData(x=null, y=null, width=null, height=null){
-		return this.ctx.getImageData(x || 0, y || 0, width || this.canvas.width, height || this.canvas.height);	
-	}
-
-	setImageData(imageData, x=null, y=null, resize=false){
-		if(resize === true){
-			this.canvas.width = imageData.width;
-			this.canvas.height = imageData.height;
-		}
-
-		this.ctx.putImageData(imageData, x || 0, y || 0);
-	}
-
-	drawImage(dataURL){
-		this.canvas.width = dataURL.width;
-		this.canvas.height = dataURL.height;
-		this.ctx.drawImage(dataURL, 0, 0);
-	}
-
-	// Returns a mask ImageData of the canvas.
-	mask(red, green, blue){
-		let imageData = this.getImageData();
-		let data = imageData.data;
-
-		const target = new Rgb(red, green, blue);
-		
-		for (let i = 0; i < data.length; i += 4) {
-			// set to black if target color, else set white.
-			const test = data.slice(i, i + 3);
-			if(target.compareAb(test)){
-				data[i + 0] = this.black.r;
-				data[i + 1] = this.black.g;
-		  		data[i + 2] = this.black.b;
-			} else {
-				data[i + 0] = this.white.r;
-				data[i + 1] = this.white.g;
-		  		data[i + 2] = this.white.b;
-			}		 	
-		}
-
-		return imageData;
-	}
-
 	ffValidNeighbors(x, y){
 		const neighbors = [
-			[x - 1, y - 1], // NW
-			[x - 1, y    ], // W
-			[x - 1, y + 1], // SW
-			[x    , y - 1], // N
-			[x    , y + 1], // S
-			[x + 1, y - 1], // NE
-			[x + 1, y    ], // E
-			[x + 1, y + 1]  // SE
+			{"x": x - 1, "y": y - 1}, // NW
+			{"x": x - 1, "y": y    }, // W
+			{"x": x - 1, "y": y + 1}, // SW
+			{"x": x    , "y": y - 1}, // N
+			{"x": x    , "y": y + 1}, // S
+			{"x": x + 1, "y": y - 1}, // NE
+			{"x": x + 1, "y": y    }, // E
+			{"x": x + 1, "y": y + 1}  // SE
 		];
 
 		return neighbors.reduce((acc, neighbor) => {
-			const xy = new XY(neighbor);
-
-			const maybe = this.getImageData(xy.x, xy.y, 1, 1).data;
-			if(this.ffTargetColor.compareAb(maybe)){
-				acc.push(xy.serialize());
+			const index = Rgb.indexFromXY(this.ffImageData, neighbor.x, neighbor.y);
+			const test = Rgb.fromImageData(this.ffImageData, index);
+			if(this.ffTargetColor.compare(test)){
+				acc.push(JSON.stringify(neighbor));
 			}
 
 			return acc;
@@ -96,33 +78,27 @@ class Canvas{
 	}
 
 	ffWorkOn(x, y){
-		let iData = this.getImageData(x, y, 1, 1);
-		const xy = new XY(x, y).serialize();
-
-		if(this.ffVisited.includes(xy)){
+		const point = JSON.stringify({"x": x, "y": y});
+		if(this.ffVisited.includes(point)){
 			return;
 		}
-
-		if(!this.ffTargetColor.compareAb(iData.data)){
+		
+		const index = Rgb.indexFromXY(this.ffImageData, x, y);
+		const test = Rgb.fromImageData(this.ffImageData, index);
+		if(!this.ffTargetColor.compare(test)){
 			return;
 		}
+		this.ffVisited.push(point);
 
 		const validNeighbors = this.ffValidNeighbors(x, y);
 		this.ffStack.push(...validNeighbors);
-
-		iData.data[0] = this.ffFillColor.r;
-		iData.data[1] = this.ffFillColor.g;
-		iData.data[2] = this.ffFillColor.b;
-		this.setImageData(iData, x, y);
-		this.floodFilled = true;
-		this.ffVisited.push(xy);
 		this.ffXs.push(x);
 		this.ffYs.push(y);
+		this.floodFilled = true;	
 	}
 
-	floodFill(x, y, targetColor, fillColor){
+	floodFill(x, y, targetColor){
 		this.ffTargetColor = targetColor;
-		this.ffFillColor = fillColor;
 		this.ffStack = [];
 		this.ffVisited = [];
 		this.ffXmax = -1;
@@ -132,11 +108,12 @@ class Canvas{
 		this.ffXs = [];
 		this.ffYs = [];
 		this.floodFilled = false;
+		this.ffImageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
 
 		this.ffWorkOn(x, y);
 		while(this.ffStack.length > 0){
 			const xy = this.ffStack.pop();
-			this.ffWorkOn(...JSON.parse(xy));
+			this.ffWorkOn(...Object.values(JSON.parse(xy)));
 		}
 
 		this.ffXs.sort((a, b) => { 
@@ -171,4 +148,4 @@ class Canvas{
 	}
 }
 
-export { Canvas };
+export { Canvas, mouseEventCanvasX, mouseEventCanvasY, mask };

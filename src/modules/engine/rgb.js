@@ -1,21 +1,29 @@
 class Rgb{
+	static indexFromXY(imageData, x, y){
+		return (y * imageData.width + x) * 4;
+	}
+
+	static fromImageData(imageData, index){
+		const data = imageData.data.slice(index, index + 3);
+		return new Rgb(...data);
+	}
+
 	constructor(r, g, b){
 		this.r = r;
 		this.g = g;
 		this.b = b;
 	}
 
-	compareAb(arrayBuffer){
-		if(arrayBuffer[0] != this.r){
+	compare(rgb){
+		if(this.r !== rgb.r){
 			return false;
 		}
-		if(arrayBuffer[1] != this.g){
+		if(this.g !== rgb.g){
 			return false;
 		}
-		if(arrayBuffer[2] != this.b){
+		if(this.b !== rgb.b){
 			return false;
 		}
-
 		return true;
 	}
 }
